@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from ..audit import log_audit_event, log_genome_event
 from ..config import Settings, get_settings
 from ..instrumentation import INFER_LATENCY, INFER_REQUESTS
+from ..scheduler import EnergyAwareScheduler, RunnerChoice
 from ..schemas import InferenceRequest, InferenceResponse, ModerationDiagnostics
 from .._compat import safe_model_dump
 from ..moderation import (
@@ -25,6 +26,14 @@ from ..security import AuthContext, get_rbac_policy, require_permission, verify_
 __all__ = ["router"]
 
 router = APIRouter()
+
+# Global scheduler instance
+_scheduler = EnergyAwareScheduler(
+    device_power_budget_j=10.0,
+    default_latency_slo_ms=1000.0,
+    local_runner_available=False,  # Will be updated at runtime
+    upstream_available=False,  # Will be checked per-request
+)
 
 
 def _extract_text(payload: Any) -> str:
@@ -141,7 +150,7 @@ async def _execute_inference(
     request: InferenceRequest,
     settings: Settings,
     context: AuthContext,
-) -> tuple[str, float, str]:
+) -> tuple[str, float, str, Dict[str, Any]]:
     try:
         enforce_prompt_policy(request.prompt, settings)
     except ModerationError as exc:
@@ -157,6 +166,17 @@ async def _execute_inference(
             detail={"code": exc.code, "message": exc.message, "topics": exc.topics},
         ) from exc
 
+    # Use scheduler to decide on runner
+    _scheduler.upstream_available = bool(settings.llm_endpoint)
+    runner_choice = _scheduler.schedule(request.prompt, prefer_local=False)
+    
+    scheduler_metadata = {
+        "runner_choice": runner_choice.runner_type,
+        "runner_reason": runner_choice.reason,
+        "estimated_cost_j": runner_choice.estimated_cost_j,
+        "estimated_latency_ms": runner_choice.estimated_latency_ms,
+    }
+
     try:
         text, latency_ms, provider = await _perform_upstream_call(request, settings)
     except HTTPException:
@@ -164,7 +184,7 @@ async def _execute_inference(
         log_audit_event(
             event_type="llm.infer.error",
             actor=context.subject,
-            payload={"mode": request.mode},
+            payload={"mode": request.mode, "scheduler": scheduler_metadata},
             settings=settings,
         )
         raise
@@ -215,10 +235,11 @@ async def _execute_inference(
             "provider": provider,
             "latency_ms": latency_ms,
             "moderation": moderation_payload,
+            "scheduler": scheduler_metadata,
         },
         settings=settings,
     )
-    return text, latency_ms, provider
+    return text, latency_ms, provider, scheduler_metadata
 
 
 async def _sse_event_stream(
@@ -227,7 +248,7 @@ async def _sse_event_stream(
     context: AuthContext,
 ) -> AsyncGenerator[str, None]:
     try:
-        text, latency_ms, provider = await _execute_inference(request, settings, context)
+        text, latency_ms, provider, scheduler_meta = await _execute_inference(request, settings, context)
     except HTTPException as exc:
         yield _encode_sse("error", {"detail": exc.detail})
         return
@@ -241,6 +262,7 @@ async def _sse_event_stream(
         {
             "provider": provider,
             "latency_ms": latency_ms,
+            "scheduler": scheduler_meta,
         },
     )
 
@@ -251,7 +273,7 @@ async def _websocket_event_stream(
     context: AuthContext,
 ) -> AsyncGenerator[Dict[str, Any], None]:
     try:
-        text, latency_ms, provider = await _execute_inference(request, settings, context)
+        text, latency_ms, provider, scheduler_meta = await _execute_inference(request, settings, context)
     except HTTPException as exc:
         yield {"type": "error", "detail": exc.detail}
         return
@@ -260,7 +282,7 @@ async def _websocket_event_stream(
         if chunk:
             yield {"type": "token", "token": chunk}
 
-    yield {"type": "done", "provider": provider, "latency_ms": latency_ms}
+    yield {"type": "done", "provider": provider, "latency_ms": latency_ms, "scheduler": scheduler_meta}
 
 
 @router.post("/api/v1/infer", response_model=InferenceResponse)
@@ -275,7 +297,7 @@ async def infer(
             detail="LLM mode is disabled",
         )
 
-    text, latency_ms, provider = await _execute_inference(request, settings, context)
+    text, latency_ms, provider, _scheduler_meta = await _execute_inference(request, settings, context)
     return InferenceResponse(response=text, provider=provider, latency_ms=latency_ms)
 
 
