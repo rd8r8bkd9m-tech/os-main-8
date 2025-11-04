@@ -116,19 +116,11 @@ const char* omega_perf_category_name(omega_perf_category_t category);
 // ==================== Convenience Macros ====================
 
 /**
- * @brief Measure performance of a code block
- * Usage:
- *   OMEGA_PERF_MEASURE(OMEGA_PERF_PATTERN_DETECTION) {
- *       // Code to measure
- *   }
- */
-#define OMEGA_PERF_MEASURE(cat) \
-    for (omega_perf_handle_t _perf_h = omega_perf_start(cat), _done = {0}; \
-         !_done.start_ns; \
-         omega_perf_end(_perf_h), _done.start_ns = 1)
-
-/**
  * @brief Simple inline performance measurement
+ * Usage:
+ *   OMEGA_PERF_START(cat);
+ *   // Code to measure
+ *   OMEGA_PERF_END(cat);
  */
 #define OMEGA_PERF_START(cat) omega_perf_handle_t _perf_##cat = omega_perf_start(cat)
 #define OMEGA_PERF_END(cat) omega_perf_end(_perf_##cat)

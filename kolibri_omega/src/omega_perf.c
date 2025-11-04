@@ -40,7 +40,10 @@ static const char* category_names[] = {
 
 static inline uint64_t get_time_ns(void) {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
+        // Fallback to zero on error (shouldn't happen in practice)
+        return 0;
+    }
     return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 

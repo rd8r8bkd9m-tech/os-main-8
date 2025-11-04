@@ -26,37 +26,47 @@ static omega_error_system_t error_system = {0};
 
 // ==================== Error String Mapping ====================
 
-static const char* error_strings[] = {
-    [OMEGA_OK] = "Success",
-    [OMEGA_ERROR_GENERIC] = "Generic error",
-    [OMEGA_ERROR_NOT_INITIALIZED] = "Module not initialized",
-    [OMEGA_ERROR_ALREADY_INITIALIZED] = "Module already initialized",
-    [OMEGA_ERROR_INVALID_STATE] = "Invalid state for operation",
-    [OMEGA_ERROR_NOT_IMPLEMENTED] = "Feature not yet implemented",
-    
-    [OMEGA_ERROR_NO_MEMORY] = "Out of memory",
-    [OMEGA_ERROR_BUFFER_FULL] = "Buffer is full",
-    [OMEGA_ERROR_RESOURCE_EXHAUSTED] = "Resource limit reached",
-    [OMEGA_ERROR_POOL_FULL] = "Formula pool full",
-    [OMEGA_ERROR_CANVAS_FULL] = "Canvas buffer full",
-    
-    [OMEGA_ERROR_INVALID_FORMULA] = "Invalid formula structure",
-    [OMEGA_ERROR_INVALID_RULE] = "Invalid rule structure",
-    [OMEGA_ERROR_CONTRADICTION] = "Logical contradiction detected",
-    [OMEGA_ERROR_INCONSISTENT_STATE] = "Inconsistent cognitive state",
-    [OMEGA_ERROR_INFERENCE_FAILED] = "Inference operation failed",
-    
-    [OMEGA_ERROR_NULL_POINTER] = "Null pointer argument",
-    [OMEGA_ERROR_INVALID_ARGUMENT] = "Invalid function argument",
-    [OMEGA_ERROR_OUT_OF_RANGE] = "Value out of valid range",
-    [OMEGA_ERROR_INVALID_ID] = "Invalid ID reference",
-    [OMEGA_ERROR_NOT_FOUND] = "Item not found",
-    
-    [OMEGA_ERROR_TASK_FAILED] = "Task execution failed",
-    [OMEGA_ERROR_DEADLOCK] = "Deadlock detected",
-    [OMEGA_ERROR_TIMEOUT] = "Operation timeout",
-    [OMEGA_ERROR_SYNC_FAILED] = "Synchronization failed"
-};
+const char* omega_error_string(omega_error_code_t code) {
+    switch (code) {
+        case OMEGA_OK: return "Success";
+        
+        // General errors (1-99)
+        case OMEGA_ERROR_GENERIC: return "Generic error";
+        case OMEGA_ERROR_NOT_INITIALIZED: return "Module not initialized";
+        case OMEGA_ERROR_ALREADY_INITIALIZED: return "Module already initialized";
+        case OMEGA_ERROR_INVALID_STATE: return "Invalid state for operation";
+        case OMEGA_ERROR_NOT_IMPLEMENTED: return "Feature not yet implemented";
+        
+        // Memory/resource errors (100-199)
+        case OMEGA_ERROR_NO_MEMORY: return "Out of memory";
+        case OMEGA_ERROR_BUFFER_FULL: return "Buffer is full";
+        case OMEGA_ERROR_RESOURCE_EXHAUSTED: return "Resource limit reached";
+        case OMEGA_ERROR_POOL_FULL: return "Formula pool full";
+        case OMEGA_ERROR_CANVAS_FULL: return "Canvas buffer full";
+        
+        // Logic/reasoning errors (200-299)
+        case OMEGA_ERROR_INVALID_FORMULA: return "Invalid formula structure";
+        case OMEGA_ERROR_INVALID_RULE: return "Invalid rule structure";
+        case OMEGA_ERROR_CONTRADICTION: return "Logical contradiction detected";
+        case OMEGA_ERROR_INCONSISTENT_STATE: return "Inconsistent cognitive state";
+        case OMEGA_ERROR_INFERENCE_FAILED: return "Inference operation failed";
+        
+        // Data validation errors (300-399)
+        case OMEGA_ERROR_NULL_POINTER: return "Null pointer argument";
+        case OMEGA_ERROR_INVALID_ARGUMENT: return "Invalid function argument";
+        case OMEGA_ERROR_OUT_OF_RANGE: return "Value out of valid range";
+        case OMEGA_ERROR_INVALID_ID: return "Invalid ID reference";
+        case OMEGA_ERROR_NOT_FOUND: return "Item not found";
+        
+        // Coordination errors (400-499)
+        case OMEGA_ERROR_TASK_FAILED: return "Task execution failed";
+        case OMEGA_ERROR_DEADLOCK: return "Deadlock detected";
+        case OMEGA_ERROR_TIMEOUT: return "Operation timeout";
+        case OMEGA_ERROR_SYNC_FAILED: return "Synchronization failed";
+        
+        default: return "Unknown error code";
+    }
+}
 
 // ==================== Default Error Handler ====================
 
@@ -138,13 +148,7 @@ void omega_error_report(omega_error_code_t code, const char* module,
     pthread_mutex_unlock(&error_system.lock);
 }
 
-const char* omega_error_string(omega_error_code_t code) {
-    if (code >= 0 && code < (int)(sizeof(error_strings) / sizeof(error_strings[0]))) {
-        const char* str = error_strings[code];
-        return str ? str : "Unknown error";
-    }
-    return "Invalid error code";
-}
+// omega_error_string is now defined above, before it's used
 
 const omega_error_context_t* omega_error_get_last(void) {
     if (!error_system.initialized) {
