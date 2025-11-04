@@ -215,8 +215,6 @@ class KnowledgeGraph:
         relation_type: Optional[RelationType] = None,
     ) -> List[Relationship]:
         """Query relationships by source, target, or type."""
-        results = []
-        
         # Start with all relationships
         candidates = set(self.relationships.keys())
         
@@ -468,7 +466,7 @@ if __name__ == "__main__":
     
     path = kg.find_path("growth_rate", "business_unit")
     if path:
-        print(f"Path from 'growth_rate' to 'business_unit':")
+        print("Path from 'growth_rate' to 'business_unit':")
         for i, entity_id in enumerate(path):
             entity = kg.get_entity(entity_id)
             print(f"  {i+1}. {entity.name} ({entity.entity_type.value})")
@@ -501,7 +499,7 @@ if __name__ == "__main__":
         print(f"    Type: {entity['type']}")
         print(f"    Confidence: {entity['confidence']:.2f}")
         if rels:
-            print(f"    Relationships:")
+            print("    Relationships:")
             for rel in rels:
                 print(f"      - {rel['type']} -> {rel['target']}")
     

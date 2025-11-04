@@ -11,15 +11,13 @@ Showcases the real artificial intelligence capabilities:
 6. Cryptographically verifiable outputs
 """
 import asyncio
-import json
 import sys
-import time
 from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from backend.service.ai_core import KolibriAICore, InferenceMode
+from backend.service.ai_core import KolibriAICore
 from backend.service.knowledge_graph import KnowledgeGraph, EntityType, RelationType
 
 
@@ -184,7 +182,7 @@ async def demo_comprehensive_ai():
     print(f"\nQuery: {test_query}")
     decision = await ai.reason(test_query)
     
-    print(f"\nDecision Details:")
+    print("\nDecision Details:")
     print(f"  • Response: {decision.response[:80]}...")
     print(f"  • Signature: {decision.signature[:32]}...")
     print(f"  • Verification: {'✓ VALID' if decision.verify_signature('demo-secret-key') else '✗ INVALID'}")
@@ -222,14 +220,14 @@ async def demo_comprehensive_ai():
     
     final_stats = ai.get_stats()
     
-    print(f"Overall System Statistics:")
+    print("Overall System Statistics:")
     print(f"  • Total queries processed: {final_stats['total_queries']}")
     print(f"  • Total energy consumed: {final_stats['total_energy_j']:.3f}J")
     print(f"  • Average energy per query: {final_stats['avg_energy_per_query_j']:.4f}J")
     
     if 'memory' in final_stats:
         mem = final_stats['memory']
-        print(f"\nConversation Memory:")
+        print("\nConversation Memory:")
         print(f"  • Turns stored: {mem['total_turns']}")
         print(f"  • Important turns: {mem['important_turns']}")
         print(f"  • Unique topics: {mem['unique_topics']}")
@@ -237,13 +235,13 @@ async def demo_comprehensive_ai():
     
     if 'learning' in final_stats:
         learn = final_stats['learning']
-        print(f"\nAdaptive Learning:")
+        print("\nAdaptive Learning:")
         print(f"  • Feedback received: {learn['total_feedback']}")
         print(f"  • Success rate: {learn['success_rate']:.1%}")
         print(f"  • Learned patterns: {learn['learned_patterns']}")
         print(f"  • Average rating: {learn['avg_rating']:.2f}/1.0")
     
-    print(f"\nKnowledge Graph:")
+    print("\nKnowledge Graph:")
     kg_stats = kg.get_stats()
     print(f"  • Entities: {kg_stats['total_entities']}")
     print(f"  • Relationships: {kg_stats['total_relationships']}")
