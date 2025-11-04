@@ -1,1 +1,0 @@
-/home/runner/work/os-main-8/.codeql-scratch/dbs/cpp/working/autobuild/bin/cc -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/ks_compiler.dir/link.d CMakeFiles/ks_compiler.dir/apps/ks_compiler.c.o -o ks_compiler  libkolibri_core.a /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/x86_64-linux-gnu/libsqlite3.so -lm

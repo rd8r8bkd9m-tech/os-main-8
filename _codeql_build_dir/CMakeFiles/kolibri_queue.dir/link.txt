@@ -1,1 +1,0 @@
-/home/runner/work/os-main-8/.codeql-scratch/dbs/cpp/working/autobuild/bin/cc -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/kolibri_queue.dir/link.d CMakeFiles/kolibri_queue.dir/apps/kolibri_queue.c.o -o kolibri_queue  libkolibri_core.a /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/x86_64-linux-gnu/libsqlite3.so -lm

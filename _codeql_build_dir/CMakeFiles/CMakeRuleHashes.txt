@@ -1,3 +1,0 @@
-# Hashes of file build rules.
-50c16685a73111885d32a2d1a20c1edc /home/runner/work/os-main-8/os-main-8/build/wasm/kolibri.wasm
-91fa313aff726e221b538ed01484ec1c CMakeFiles/kolibri_wasm_artifact
