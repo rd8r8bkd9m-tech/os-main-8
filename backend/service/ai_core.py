@@ -5,6 +5,8 @@ This module implements the unified AI decision system combining:
 2. Neural inference (optional local LLM)
 3. Energy-aware routing (scheduler-based model selection)
 4. Cryptographic verification (HMAC-signed outputs)
+5. Conversation memory for context-aware reasoning
+6. Adaptive learning from user feedback
 """
 
 from __future__ import annotations
@@ -18,6 +20,9 @@ import time
 from dataclasses import dataclass, asdict
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
+
+from backend.service.conversation_memory import ConversationMemory
+from backend.service.learning_system import LearningSystem, FeedbackType
 
 __all__ = [
     "InferenceMode",
@@ -74,6 +79,11 @@ class KolibriAICore:
     
     Combines symbolic reasoning (KolibriScript rules) with optional neural inference
     (local LLM) to provide verifiable, energy-efficient AI decisions.
+    
+    Enhanced with:
+    - Conversation memory for context-aware responses
+    - Adaptive learning from user feedback
+    - Uncertainty reasoning with confidence calibration
     """
 
     def __init__(
@@ -83,6 +93,8 @@ class KolibriAICore:
         enable_llm: bool = False,
         llm_endpoint: Optional[str] = None,
         rules_database: Optional[Dict[str, Any]] = None,
+        enable_memory: bool = True,
+        enable_learning: bool = True,
     ):
         """Initialize Kolibri AI Core.
         
@@ -91,6 +103,8 @@ class KolibriAICore:
             enable_llm: Whether to use local LLM backend
             llm_endpoint: Optional LLM API endpoint
             rules_database: Initial symbolic rules
+            enable_memory: Enable conversation memory
+            enable_learning: Enable adaptive learning
         """
         self.secret_key = secret_key
         self.enable_llm = enable_llm
@@ -98,6 +112,12 @@ class KolibriAICore:
         self.rules_db = rules_database or {}
         self.call_count = 0
         self.total_energy_j = 0.0
+        
+        # Enhanced capabilities
+        self.memory = ConversationMemory() if enable_memory else None
+        self.learning = LearningSystem() if enable_learning else None
+        self.enable_memory = enable_memory
+        self.enable_learning = enable_learning
 
     def _register_rule(self, name: str, rule: Dict[str, Any]) -> None:
         """Register a symbolic reasoning rule."""
@@ -106,11 +126,26 @@ class KolibriAICore:
 
     def _apply_symbolic_reasoning(self, query: str) -> Tuple[str, List[Dict[str, Any]], float]:
         """
-        Apply deterministic symbolic reasoning.
+        Apply deterministic symbolic reasoning with context awareness.
         
         Returns: (response, reasoning_trace, energy_cost_j)
         """
         trace: List[Dict[str, Any]] = []
+        
+        # Stage 0: Check conversation memory for context
+        context_info = {}
+        if self.enable_memory and self.memory:
+            relevant_context = self.memory.get_relevant_context(query, max_turns=3)
+            if relevant_context:
+                context_info = {
+                    "relevant_turns": len(relevant_context),
+                    "context_queries": [t.query[:50] for t in relevant_context],
+                }
+                trace.append({
+                    "stage": "context_retrieval",
+                    "found_relevant_context": True,
+                    "context_turns": len(relevant_context),
+                })
         
         # Stage 1: Parse intent
         intent = "unknown"
@@ -131,11 +166,26 @@ class KolibriAICore:
             intent = "open_ended"
             confidence = 0.5
         
+        # Apply learning adjustments
+        if self.enable_learning and self.learning:
+            topic = self._extract_topic_for_learning(query)
+            confidence_adj = self.learning.get_confidence_adjustment(topic)
+            confidence = max(0.1, min(1.0, confidence + confidence_adj))
+            
+            if confidence_adj != 0:
+                trace.append({
+                    "stage": "learning_adjustment",
+                    "topic": topic,
+                    "confidence_adjustment": confidence_adj,
+                    "adjusted_confidence": confidence,
+                })
+        
         trace.append({
             "stage": "intent_detection",
             "intent": intent,
             "confidence": confidence,
-            "keywords_found": [w for w in ["revenue", "sales", "approve", "decision"] if w in query_lower]
+            "keywords_found": [w for w in ["revenue", "sales", "approve", "decision"] if w in query_lower],
+            "context_aware": bool(context_info),
         })
         
         # Stage 2: Look up matching rules
@@ -151,27 +201,56 @@ class KolibriAICore:
             "matched_rule_names": matching_rules
         })
         
-        # Stage 3: Generate symbolic response
+        # Stage 3: Generate symbolic response with context
+        response_parts = []
+        
         if intent == "business_analysis":
-            response = "Based on current data patterns, quarterly growth shows 12-15% trend with seasonal Q4 variance. Confidence: 85%."
+            response_parts.append("Based on current data patterns, quarterly growth shows 12-15% trend with seasonal Q4 variance.")
+            if context_info:
+                response_parts.append("Building on our previous discussion of revenue metrics.")
         elif intent == "approval_workflow":
-            response = "Decision: APPROVED. Rationale: All checks passed. Audit log entry created."
+            response_parts.append("Decision: APPROVED. Rationale: All checks passed. Audit log entry created.")
         elif intent == "calculation":
-            response = "Calculation completed. Result logged with verification."
+            response_parts.append("Calculation completed. Result logged with verification.")
+            if self.enable_learning and self.learning:
+                # Check if we need more detail
+                should_adjust, reason = self.learning.should_adjust_response(query)
+                if should_adjust and "detail" in reason.lower():
+                    response_parts.append("Detailed breakdown: Using aggregated data from specified period.")
         else:
-            response = "I've processed your query. Multiple interpretations possible. Please clarify."
+            response_parts.append("I've processed your query. Multiple interpretations possible.")
+            if context_info:
+                response_parts.append(f"Considering context from {len(context_info.get('context_queries', []))} previous interactions.")
+        
+        response = " ".join(response_parts)
         
         trace.append({
             "stage": "response_generation",
             "method": "symbolic_rules",
             "response": response,
-            "output_confidence": confidence
+            "output_confidence": confidence,
+            "context_enhanced": bool(context_info),
         })
         
         # Energy cost: minimal for symbolic reasoning
         energy_cost = 0.05
         
         return response, trace, energy_cost
+    
+    def _extract_topic_for_learning(self, text: str) -> str:
+        """Extract topic for learning system."""
+        text_lower = text.lower()
+        
+        if any(word in text_lower for word in ["revenue", "sales", "profit"]):
+            return "finance"
+        elif any(word in text_lower for word in ["approve", "decision", "budget"]):
+            return "approval"
+        elif any(word in text_lower for word in ["calculate", "compute", "average"]):
+            return "calculation"
+        elif any(word in text_lower for word in ["forecast", "predict", "project"]):
+            return "forecasting"
+        else:
+            return "general"
 
     async def _apply_neural_inference(self, query: str) -> Tuple[Optional[str], List[Dict[str, Any]], float]:
         """
@@ -331,6 +410,14 @@ class KolibriAICore:
         
         self.total_energy_j += total_cost
         
+        # Store in conversation memory
+        if self.enable_memory and self.memory:
+            self.memory.add_turn(
+                query=query,
+                response=combined_response,
+                confidence=total_confidence,
+            )
+        
         LOGGER.info(f"Decision #{self.call_count}: confidence={total_confidence:.2f}, "
                    f"energy={total_cost:.2f}J, time={final_decision.decision_time_ms:.1f}ms")
         
@@ -339,36 +426,96 @@ class KolibriAICore:
     async def batch_reason(self, queries: List[str]) -> List[KolibriAIDecision]:
         """Process multiple queries concurrently."""
         return await asyncio.gather(*[self.reason(q) for q in queries])
+    
+    def add_feedback(
+        self,
+        query: str,
+        response: str,
+        feedback_type: str,
+        *,
+        rating: Optional[float] = None,
+        feedback_text: Optional[str] = None,
+        correct_answer: Optional[str] = None,
+    ) -> bool:
+        """Add user feedback to improve future responses.
+        
+        Args:
+            query: Original query
+            response: AI response
+            feedback_type: 'positive', 'negative', 'correction', or 'clarification'
+            rating: Optional numeric rating (0.0 to 1.0)
+            feedback_text: Optional text feedback
+            correct_answer: Optional correct answer for corrections
+            
+        Returns:
+            True if feedback was recorded
+        """
+        if not self.enable_learning or not self.learning:
+            LOGGER.warning("Learning system not enabled, feedback ignored")
+            return False
+        
+        try:
+            feedback_enum = FeedbackType(feedback_type)
+            self.learning.add_feedback(
+                query=query,
+                response=response,
+                feedback_type=feedback_enum,
+                rating=rating,
+                feedback_text=feedback_text,
+                correct_answer=correct_answer,
+            )
+            LOGGER.info(f"Feedback recorded: {feedback_type}")
+            return True
+        except ValueError:
+            LOGGER.error(f"Invalid feedback type: {feedback_type}")
+            return False
 
     def get_stats(self) -> Dict[str, Any]:
         """Get aggregate statistics."""
         avg_energy = self.total_energy_j / max(self.call_count, 1)
-        return {
+        stats = {
             "total_queries": self.call_count,
             "total_energy_j": self.total_energy_j,
             "avg_energy_per_query_j": avg_energy,
             "mode": "hybrid" if self.enable_llm else "symbolic_only",
         }
+        
+        # Add memory stats
+        if self.enable_memory and self.memory:
+            stats["memory"] = self.memory.get_stats()
+        
+        # Add learning stats
+        if self.enable_learning and self.learning:
+            stats["learning"] = self.learning.get_stats()
+        
+        return stats
 
 
 # Example usage & testing
 async def example_usage():
-    """Demonstrate Kolibri AI in action."""
+    """Demonstrate Kolibri AI in action with enhanced capabilities."""
     print("\n" + "="*70)
-    print("🪶 KOLIBRI AI — LIVE REASONING ENGINE")
+    print("🪶 KOLIBRI AI — ENHANCED REASONING ENGINE")
+    print("   with Memory, Learning, and Adaptive Intelligence")
     print("="*70 + "\n")
     
-    # Initialize
-    ai = KolibriAICore(enable_llm=False, secret_key="demo-secret")
+    # Initialize with all features enabled
+    ai = KolibriAICore(
+        enable_llm=False,
+        secret_key="demo-secret",
+        enable_memory=True,
+        enable_learning=True,
+    )
     
-    # Test queries
+    # Test queries with conversational context
     queries = [
         "What is our projected Q4 revenue growth?",
+        "What about expenses for the same quarter?",  # Context-dependent
         "Should we approve the $50k expense request?",
         "Calculate average order value for last month",
     ]
     
-    print("Executing reasoning tasks...\n")
+    print("📊 Executing reasoning tasks with memory and learning...\n")
     
     for i, query in enumerate(queries, 1):
         print(f"Query {i}: {query}")
@@ -378,12 +525,78 @@ async def example_usage():
         print(f"  Confidence: {decision.confidence:.1%}")
         print(f"  Energy: {decision.energy_cost_j:.2f}J")
         print(f"  Time: {decision.decision_time_ms:.1f}ms")
-        print(f"  Signature: {decision.signature[:16]}...")
+        print(f"  Mode: {decision.mode.value}")
         print(f"  Verified: {decision.verify_signature('demo-secret')}")
+        
+        # Check reasoning trace for context awareness
+        for trace_item in decision.reasoning_trace:
+            if trace_item.get("stage") == "context_retrieval":
+                print(f"  💡 Used context from {trace_item['context_turns']} previous turns")
+            if trace_item.get("stage") == "learning_adjustment":
+                adj = trace_item.get("confidence_adjustment", 0)
+                if adj != 0:
+                    print(f"  📚 Learning adjustment: {adj:+.2f} (topic: {trace_item.get('topic')})")
         print()
     
-    # Statistics
-    print(f"\n📊 Statistics:\n{json.dumps(ai.get_stats(), indent=2)}")
+    # Demonstrate learning from feedback
+    print("-"*70)
+    print("\n💬 Simulating user feedback...\n")
+    
+    # Positive feedback
+    ai.add_feedback(
+        "What is our projected Q4 revenue growth?",
+        "Based on current data patterns, quarterly growth shows 12-15% trend with seasonal Q4 variance.",
+        "positive",
+        rating=0.9,
+    )
+    print("✓ Positive feedback on revenue query (rating: 0.9)")
+    
+    # Negative feedback with correction
+    ai.add_feedback(
+        "Calculate average order value for last month",
+        "Calculation completed. Result logged with verification.",
+        "correction",
+        correct_answer="Average order value: $142.50 (based on 1,200 orders, $171,000 total)",
+        rating=0.4,
+    )
+    print("✓ Correction feedback on calculation (wants more detail)")
+    
+    # Test same query again to see learning effect
+    print("\n-"*70)
+    print("\n🔄 Re-running query after learning...\n")
+    
+    query = "Calculate the total order value"
+    print(f"Query: {query}")
+    decision = await ai.reason(query)
+    print(f"Response: {decision.response}")
+    print(f"Confidence: {decision.confidence:.1%}")
+    
+    # Statistics with enhanced metrics
+    print("\n" + "-"*70)
+    print("\n📈 Enhanced Statistics:\n")
+    stats = ai.get_stats()
+    
+    print(f"Total Queries: {stats['total_queries']}")
+    print(f"Total Energy: {stats['total_energy_j']:.2f}J")
+    print(f"Avg Energy: {stats['avg_energy_per_query_j']:.3f}J/query")
+    
+    if 'memory' in stats:
+        mem = stats['memory']
+        print(f"\n💾 Memory System:")
+        print(f"  Stored turns: {mem['total_turns']}")
+        print(f"  Important turns: {mem['important_turns']}")
+        print(f"  Unique entities: {mem['unique_entities']}")
+        print(f"  Unique topics: {mem['unique_topics']}")
+    
+    if 'learning' in stats:
+        learn = stats['learning']
+        print(f"\n📚 Learning System:")
+        print(f"  Total feedback: {learn['total_feedback']}")
+        print(f"  Success rate: {learn['success_rate']:.1%}")
+        print(f"  Learned patterns: {learn['learned_patterns']}")
+        print(f"  High-confidence patterns: {learn['high_confidence_patterns']}")
+        print(f"  Topics tracked: {learn['topics_tracked']}")
+    
     print("\n" + "="*70 + "\n")
 
 
