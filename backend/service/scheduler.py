@@ -11,7 +11,6 @@ from typing import Dict, List, Literal, Optional
 
 __all__ = [
     "RunnerChoice",
-    "SchedulerHeuristic",
     "EnergyAwareScheduler",
 ]
 

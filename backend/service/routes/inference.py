@@ -1,19 +1,23 @@
-"""LLM inference endpoints."""
+"""LLM inference endpoints with Kolibri AI integration."""
 from __future__ import annotations
 
+import hashlib
 import json
+import logging
 import time
-from typing import Any, AsyncGenerator, Dict, Iterable
+from typing import Any, AsyncGenerator, Dict, Iterable, List
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
+from ..ai_core import KolibriAICore
+from ..generative_ai import GenerativeDecimalAI
 from ..audit import log_audit_event, log_genome_event
 from ..config import Settings, get_settings
 from ..instrumentation import INFER_LATENCY, INFER_REQUESTS
-from ..scheduler import EnergyAwareScheduler, RunnerChoice
+from ..scheduler import EnergyAwareScheduler
 from ..schemas import InferenceRequest, InferenceResponse, ModerationDiagnostics
 from .._compat import safe_model_dump
 from ..moderation import (
@@ -21,18 +25,31 @@ from ..moderation import (
     moderate_response,
     ModerationError,
 )
-from ..security import AuthContext, get_rbac_policy, require_permission, verify_session_token
+from ..security import AuthContext, get_rbac_policy, require_permission, verify_session_token, get_current_identity
 
 __all__ = ["router"]
 
 router = APIRouter()
+LOGGER = logging.getLogger(__name__)
 
-# Global scheduler instance
+# Global instances
 _scheduler = EnergyAwareScheduler(
     device_power_budget_j=10.0,
     default_latency_slo_ms=1000.0,
-    local_runner_available=False,  # Will be updated at runtime
-    upstream_available=False,  # Will be checked per-request
+    local_runner_available=False,
+    upstream_available=False,
+)
+
+_ai_core = KolibriAICore(
+    secret_key="kolibri-prod-secret",
+    enable_llm=False,  # Will be enabled if LLM endpoint configured
+    llm_endpoint=None,
+)
+
+# NEW: Generative Decimal AI (самообучающаяся система)
+_generative_ai = GenerativeDecimalAI(
+    secret_key="kolibri-generative-prod",
+    pool_size=24  # 24 эволюционирующие формулы
 )
 
 
@@ -391,3 +408,282 @@ async def infer_websocket(websocket: WebSocket) -> None:
                 await websocket.send_json(message)
             except WebSocketDisconnect:
                 return
+
+
+# ============================================================================
+# KOLIBRI AI — UNIFIED REASONING ENDPOINT
+# ============================================================================
+
+@router.post("/api/v1/ai/reason")
+async def ai_reason(
+    request: InferenceRequest,
+    settings: Settings = Depends(get_settings),
+    context: AuthContext = Depends(get_current_identity),
+) -> Dict[str, Any]:
+    """
+    Execute Generative Decimal AI reasoning — самообучающаяся система.
+    
+    Использует:
+    - Decimal cognition: текст → цифры 0-9
+    - Эволюционные формулы с фитнесом
+    - Фрактальную вложенность
+    - Децентрализованное хранение
+    """
+    start = time.perf_counter()
+    
+    try:
+        # Step 1: Validate prompt
+        enforce_prompt_policy(request.prompt, settings)
+    except ModerationError as exc:
+        INFER_REQUESTS.labels(outcome="error").inc()
+        log_audit_event(
+            event_type="kolibri_ai.reason.rejected",
+            actor=context.subject,
+            payload={"phase": "prompt", "code": exc.code, "topics": exc.topics},
+            settings=settings,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"code": exc.code, "message": exc.message, "topics": exc.topics},
+        ) from exc
+    
+    # Step 2: Execute generative reasoning
+    try:
+        result = await _generative_ai.reason(request.prompt)
+    except Exception as exc:
+        INFER_REQUESTS.labels(outcome="error").inc()
+        log_audit_event(
+            event_type="kolibri_ai.reason.error",
+            actor=context.subject,
+            payload={"error": str(exc)},
+            settings=settings,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Generative AI failed: {exc}",
+        ) from exc
+    
+    elapsed_ms = (time.perf_counter() - start) * 1000.0
+    
+    # Step 3: Log success
+    INFER_REQUESTS.labels(outcome="success").inc()
+    INFER_LATENCY.labels(provider="generative_decimal_ai").observe(elapsed_ms / 1000.0)
+    
+    log_audit_event(
+        event_type="kolibri_ai.generative_reason",
+        actor=context.subject,
+        payload={
+            "query_length": len(request.prompt),
+            "response_length": len(result["response"]),
+            "confidence": result["confidence"],
+            "mode": result["mode"],
+            "formula_fitness": result["formula_fitness"],
+            "generation": result["generation"],
+            "latency_ms": elapsed_ms,
+        },
+        settings=settings,
+    )
+    
+    # Step 4: Log genome evolution (optional)
+    if result["formula_fitness"] > 0.5:
+        try:
+            log_genome_event(
+                stage="formula_application",
+                actor=context.subject,
+                payload={
+                    "formula_gene": result["formula_gene"],
+                    "fitness": result["formula_fitness"],
+                    "generation": result["generation"],
+                    "query_digest": hashlib.sha256(request.prompt.encode()).hexdigest()[:16],
+                },
+                settings=settings,
+            )
+        except Exception as log_err:
+            LOGGER.warning(f"Failed to log genome event: {log_err}")
+    
+    # Step 5: Return generative decision
+    return result
+
+
+@router.post("/api/v1/ai/teach")
+async def ai_teach(
+    input_text: str,
+    expected_output: str,
+    evolve_generations: int = 5,
+    settings: Settings = Depends(get_settings),
+    context: AuthContext = Depends(get_current_identity),
+) -> Dict[str, Any]:
+    """
+    Обучить генеративную ИИ на примере.
+    
+    Добавляет пример (вход → выход) и запускает эволюцию формул.
+    Система самообучается, улучшая фитнес через генетический алгоритм.
+    """
+    if not input_text or not expected_output:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Both input_text and expected_output are required"
+        )
+    
+    if evolve_generations < 1 or evolve_generations > 100:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="evolve_generations must be between 1 and 100"
+        )
+    
+    try:
+        result = await _generative_ai.teach(input_text, expected_output, evolve_generations)
+    except Exception as exc:
+        log_audit_event(
+            event_type="kolibri_ai.teach.error",
+            actor=context.subject,
+            payload={"error": str(exc)},
+            settings=settings,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Teaching failed: {exc}",
+        ) from exc
+    
+    # Log successful learning
+    log_audit_event(
+        event_type="kolibri_ai.teach",
+        actor=context.subject,
+        payload={
+            "input_length": len(input_text),
+            "output_length": len(expected_output),
+            "generations": evolve_generations,
+            "best_fitness": result["evolution"]["best_fitness"],
+        },
+        settings=settings,
+    )
+    
+    return result
+
+
+@router.get("/api/v1/ai/generative/stats")
+async def ai_generative_stats(
+    context: AuthContext = Depends(get_current_identity),
+) -> Dict[str, Any]:
+    """Возвращает статистику генеративной ИИ системы."""
+    return _generative_ai.get_stats()
+
+
+@router.post("/api/v1/ai/learn/data")
+async def ai_learn_from_data(
+    data_pairs: List[Dict[str, str]],
+    evolve_generations: int = 10,
+    settings: Settings = Depends(get_settings),
+    context: AuthContext = Depends(get_current_identity),
+) -> Dict[str, Any]:
+    """Обучает AI на массиве пар входных и выходных данных.
+    
+    Args:
+        data_pairs: Список словарей с ключами "input" и "output"
+        evolve_generations: Количество поколений эволюции (1-100)
+        
+    Example:
+        POST /api/v1/ai/learn/data
+        [
+            {"input": "hello", "output": "hi there"},
+            {"input": "goodbye", "output": "see you later"},
+            {"input": "thanks", "output": "you're welcome"}
+        ]
+    """
+    if not data_pairs or len(data_pairs) > 1000:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Provide 1-1000 data pairs"
+        )
+    
+    if not (1 <= evolve_generations <= 100):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="evolve_generations must be between 1 and 100"
+        )
+    
+    # Преобразуем словари в кортежи
+    pairs = []
+    for i, item in enumerate(data_pairs):
+        if "input" not in item or "output" not in item:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Item {i} missing 'input' or 'output' field"
+            )
+        pairs.append((item["input"], item["output"]))
+    
+    # Обучаем систему
+    result = await _generative_ai.learn_from_data(pairs, evolve_generations)
+    
+    # Логируем событие
+    log_audit_event(
+        event_type="kolibri_ai.learn_from_data",
+        actor=context.subject,
+        payload={
+            "examples_count": len(pairs),
+            "generations": evolve_generations,
+            "best_fitness": result["evolution"]["best_fitness"],
+        },
+        settings=settings,
+    )
+    
+    return result
+
+
+@router.post("/api/v1/ai/reason/batch")
+async def ai_reason_batch(
+    queries: List[str],
+    settings: Settings = Depends(get_settings),
+    context: AuthContext = Depends(require_permission("kolibri.infer")),
+) -> Dict[str, Any]:
+    """Process multiple queries concurrently via Kolibri AI."""
+    if not queries or len(queries) > 100:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Provide 1-100 queries",
+        )
+    
+    # Configure AI
+    _ai_core.enable_llm = settings.response_mode == "llm" and bool(settings.llm_endpoint)
+    _ai_core.llm_endpoint = settings.llm_endpoint
+    
+    # Execute batch reasoning
+    start = time.perf_counter()
+    decisions = await _ai_core.batch_reason(queries)
+    elapsed_ms = (time.perf_counter() - start) * 1000.0
+    
+    log_audit_event(
+        event_type="kolibri_ai.batch_reason",
+        actor=context.subject,
+        payload={
+            "batch_size": len(queries),
+            "total_energy_j": _ai_core.total_energy_j,
+            "total_latency_ms": elapsed_ms,
+        },
+        settings=settings,
+    )
+    
+    return {
+        "batch_size": len(decisions),
+        "decisions": [
+            {
+                "query": d.query,
+                "response": d.response,
+                "confidence": d.confidence,
+                "signature": d.signature,
+            }
+            for d in decisions
+        ],
+        "total_energy_j": _ai_core.total_energy_j,
+        "total_latency_ms": elapsed_ms,
+        "stats": _ai_core.get_stats(),
+    }
+
+
+@router.get("/api/v1/ai/stats")
+async def ai_stats(
+    settings: Settings = Depends(get_settings),
+    context: AuthContext = Depends(require_permission("kolibri.infer")),
+) -> Dict[str, Any]:
+    """Get Kolibri AI statistics."""
+    return _ai_core.get_stats()

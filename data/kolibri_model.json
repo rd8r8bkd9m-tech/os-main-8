@@ -1,0 +1,200 @@
+{
+  "pool_size": 24,
+  "gene_length": 32,
+  "generation": 0,
+  "examples": [],
+  "formulas": [
+    {
+      "gene": "84284556622058911137665624349080",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078505,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "15540048623486693393432559478642",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078519,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "93319272436283684089048746240437",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078531,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "02696136860167790428814012581744",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0785432,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "61544626804187312408181383380475",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0785542,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "15232589461511616183563740781150",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0785651,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "86055739852003677320143776700447",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0785768,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "33507580976444986220020166325111",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078589,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "02468557852873375820895680483110",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0786,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "93479145411490259799371822811880",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078611,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "12866034640189741108249318775311",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0786219,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "61598715839633577607099904898495",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078633,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "57004305458913897846052036343020",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078645,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "34566106022303010502700594463410",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078656,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "34069442276820863881855707775945",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078667,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "69460030951386113751957449359696",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0786781,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "27042953478520750760236483049089",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.07869,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "14812739925191304294264276383371",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078701,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "33449456379697756043834025297545",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078712,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "04860301959687648683025737561209",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078723,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "95391775643658588364092694302886",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0787342,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "61474707755797261500018382486011",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.0787451,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "57966374315907463539155589300664",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078756,
+      "learned_patterns": {}
+    },
+    {
+      "gene": "72962661677640389245267940428916",
+      "fitness": 0.0,
+      "parents": [],
+      "context": "random_init",
+      "created_at": 1762235491.078767,
+      "learned_patterns": {}
+    }
+  ]
+}

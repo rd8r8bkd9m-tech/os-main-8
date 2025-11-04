@@ -1,18 +1,46 @@
+# Build artifacts
 /build/
+/build-fuzz/
+*.o
+*.a
+compile_commands.json
+ks_compiler_roundtrip.cmake
+
+# Frontend build
 frontend/*.tsbuildinfo
 frontend/vite.config.js
 frontend/vite.config.d.ts
 frontend/public/kolibri.wasm
-*.o
-*.a
+frontend/dist/
+frontend/node_modules/
+frontend/.lighthouse/
+
+# Logs and runtime
 *.log
+logs/
 *.dat
-root.key
-compile_commands.json
+*.jsonl
+
+# Python & venv
+.venv/
+.chatvenv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# IDE & OS
 .DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
 
-.lighthouse/
+# Security
+root.key
+.env
+.env.local
 
+# Distribution
 kolibri-rc-*.tar.gz
 kolibri-rc-*.sha256
-.venv/

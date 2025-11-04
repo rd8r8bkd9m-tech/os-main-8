@@ -1,0 +1,54 @@
+# Обучающие данные для Kolibri AI
+# Формат: input<TAB>output
+# Комментарии начинаются с #
+
+# Приветствия
+hello	hi there, how can I help you?
+hi	hello! nice to meet you
+good morning	good morning! have a great day
+good evening	good evening! how are you?
+
+# Прощания
+goodbye	see you later! take care
+bye	goodbye! have a nice day
+see you	see you soon!
+
+# Благодарности
+thank you	you're very welcome!
+thanks	my pleasure!
+appreciate it	glad I could help!
+
+# Вопросы о системе
+what is your name	I am Kolibri AI, a self-learning generative system
+who are you	I'm Kolibri AI, created by Vladislav Kochurov
+what can you do	I can learn from data and generate intelligent responses
+how do you work	I use decimal encoding and evolutionary formulas to learn patterns
+
+# Математика
+2+2	equals 4
+5*3	equals 15
+10-7	equals 3
+20/4	equals 5
+
+# Общие вопросы
+how are you	I'm doing great, thanks for asking!
+what time is it	I don't have access to real-time information yet
+where are you from	I was created in the Kolibri AI project
+why	to help people and learn from interactions
+
+# Погода
+weather today	I don't have real-time weather data yet
+is it raining	I can't check weather conditions currently
+will it snow	I need weather API integration for that
+
+# Технические вопросы
+how to code	start with simple examples and practice regularly
+what is AI	artificial intelligence: systems that learn and adapt
+explain neural networks	computational models inspired by biological brains
+what is machine learning	algorithms that improve through experience
+
+# Команды
+help	I'm here to assist! Ask me anything or teach me new patterns
+info	I'm Kolibri AI - a generative system using decimal cognition
+stats	check /api/v1/ai/generative/stats for detailed metrics
+reset	I continuously learn, but manual reset requires admin access
