@@ -113,9 +113,9 @@ int omega_detect_extended_patterns(const void* facts, int fact_count, int64_t cu
                         pattern->overall_confidence = 0.9 * 0.9 * 0.9;
                         pattern->timing_variance = 5;
                         
-                        printf("[ExtendedPatternDetector] Detected 3-step pattern %llu: "
+                        printf("[ExtendedPatternDetector] Detected 3-step pattern %lu: "
                                "%d -> %d -> %d (confidence: %.3f)\n",
-                               pattern->pattern_id, fid_i, fid_j, fid_k,
+                               (unsigned long)pattern->pattern_id, fid_i, fid_j, fid_k,
                                pattern->overall_confidence);
                         
                         detector_ctx.pattern_count++;

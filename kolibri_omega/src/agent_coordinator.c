@@ -60,8 +60,8 @@ int omega_detect_agent_state_changes(uint32_t agent_id, uint64_t formula_id,
         coordinator_ctx.unique_agents++;
     }
     
-    printf("[AgentCoordinator] Agent %u changed state to formula %llu at time %lld "
-           "(confidence: %.2f)\n", agent_id, formula_id, timestamp, confidence);
+    printf("[AgentCoordinator] Agent %u changed state to formula %lu at time %ld "
+           "(confidence: %.2f)\n", agent_id, (unsigned long)formula_id, (long)timestamp, confidence);
     
     return 1;  // Одно изменение обнаружено
 }
@@ -83,8 +83,8 @@ int omega_find_synchronized_agents(int64_t max_time_delta_ms) {
                 int64_t time_delta = state_j->timestamp - state_i->timestamp;
                 if (time_delta >= 0 && time_delta <= max_time_delta_ms) {
                     printf("[AgentCoordinator] Synchronized pair: Agent %u ↔ Agent %u "
-                           "(time delta: %lld ms)\n",
-                           state_i->agent_id, state_j->agent_id, time_delta);
+                           "(time delta: %ld ms)\n",
+                           state_i->agent_id, state_j->agent_id, (long)time_delta);
                     synchronized_pairs++;
                     coordinator_ctx.stats.synchronization_pairs++;
                 }
@@ -132,9 +132,9 @@ int omega_detect_coordination_patterns(const omega_coordination_event_t* coordin
             pattern->pattern_type = 3;  // Другое
         }
         
-        printf("[AgentCoordinator] Detected coordination pattern %llu: %d agents "
+        printf("[AgentCoordinator] Detected coordination pattern %lu: %d agents "
                "(type: %d, strength: %.2f)\n",
-               pattern->pattern_id, pattern->agent_count, pattern->pattern_type,
+               (unsigned long)pattern->pattern_id, pattern->agent_count, pattern->pattern_type,
                event->coordination_strength);
         
         coordinator_ctx.pattern_count++;
@@ -204,9 +204,9 @@ int omega_create_coordination_event(const uint32_t* agent_ids, int agent_count,
     coordinator_ctx.stats.total_coordination_events++;
     coordinator_ctx.stats.average_coordination_strength += coordination_strength;
     
-    printf("[AgentCoordinator] Created coordination event %llu: %d agents, "
+    printf("[AgentCoordinator] Created coordination event %lu: %d agents, "
            "strength %.2f\n",
-           coordination_event_out->coordination_id, agent_count, coordination_strength);
+           (unsigned long)coordination_event_out->coordination_id, agent_count, coordination_strength);
     
     return 0;
 }
