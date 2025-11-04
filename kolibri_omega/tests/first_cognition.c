@@ -6,6 +6,7 @@
 
 // Сначала включаем все определения типов
 #include "kolibri_omega/include/types.h"
+#include "kolibri_omega/include/omega_errors.h"
 
 // Затем включаем все заголовочные файлы модулей
 #include "kolibri_omega/include/canvas.h"
@@ -28,6 +29,14 @@
 
 int main() {
     srandom(time(NULL));
+
+    // Initialize error handling system first
+    int err = omega_error_system_init();
+    if (err != OMEGA_OK) {
+        fprintf(stderr, "Failed to initialize error system: %d\n", err);
+        return 1;
+    }
+    printf("[ErrorSystem] Initialized successfully\n");
 
     // Инициализация
     kf_pool_t pool;
@@ -252,6 +261,10 @@ int main() {
     omega_canvas_destroy(&canvas);
     kf_pool_destroy(&pool);
     sigma_coordinator_destroy(&coord);
+    
+    // Shutdown error handling system last
+    omega_error_system_shutdown();
+    printf("[ErrorSystem] Shutdown complete\n");
 
     printf("Shutdown complete.\n");
 
