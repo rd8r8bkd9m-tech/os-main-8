@@ -7,6 +7,7 @@
 // Сначала включаем все определения типов
 #include "kolibri_omega/include/types.h"
 #include "kolibri_omega/include/omega_errors.h"
+#include "kolibri_omega/include/omega_perf.h"
 
 // Затем включаем все заголовочные файлы модулей
 #include "kolibri_omega/include/canvas.h"
@@ -37,6 +38,14 @@ int main() {
         return 1;
     }
     printf("[ErrorSystem] Initialized successfully\n");
+    
+    // Initialize performance profiling system
+    err = omega_perf_init();
+    if (err != OMEGA_OK) {
+        fprintf(stderr, "Failed to initialize performance system: %d\n", err);
+        return 1;
+    }
+    printf("[PerfSystem] Initialized successfully\n");
 
     // Инициализация
     kf_pool_t pool;
@@ -114,10 +123,15 @@ int main() {
         // 3. Наблюдатель анализирует холст
         omega_observer_tick(&observer);
 
-        // 4. Предсказатель делает предсказания
+        // 4. Предсказатель делает предсказания (с профилированием)
+        omega_perf_handle_t perf_pred = omega_perf_start(OMEGA_PERF_INFERENCE);
         omega_predictor_lobe_tick(&predictor, t);
-        // Phase 3: Обнаруживаем паттерны из 3+ шагов
+        omega_perf_end(perf_pred);
+        
+        // Phase 3: Обнаруживаем паттерны из 3+ шагов (с профилированием)
+        omega_perf_handle_t perf_pattern = omega_perf_start(OMEGA_PERF_PATTERN_DETECTION);
         omega_detect_extended_patterns(NULL, 5, t * 100);
+        omega_perf_end(perf_pattern);
 
         // 5. Решатель обрабатывает задачи
         omega_solver_lobe_tick(&solver);
@@ -250,6 +264,9 @@ int main() {
     // Остановка и уничтожение
     printf("\n--- Simulation Finished. Shutting down. ---\n");
     
+    // Print performance report before shutdown
+    omega_perf_print_report();
+    
     omega_agent_coordinator_shutdown();  // Phase 5: остановка координатора
     omega_counterfactual_reasoner_shutdown();  // Phase 6: остановка counterfactual reasoner
     omega_adaptive_abstraction_shutdown();  // Phase 7: остановка адаптивной абстракции
@@ -262,7 +279,9 @@ int main() {
     kf_pool_destroy(&pool);
     sigma_coordinator_destroy(&coord);
     
-    // Shutdown error handling system last
+    // Shutdown profiling and error handling systems last
+    omega_perf_shutdown();
+    printf("[PerfSystem] Shutdown complete\n");
     omega_error_system_shutdown();
     printf("[ErrorSystem] Shutdown complete\n");
 
