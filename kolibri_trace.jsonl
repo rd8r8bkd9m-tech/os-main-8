@@ -1785,3 +1785,108 @@
 {"event": {"metka": 1762291038.477564, "soobshenie": "gamma->delta", "tip": "ASK"}}
 {"event": {"metka": 1762291038.4776988, "soobshenie": "alpha->beta", "tip": "ASK"}}
 {"event": {"metka": 1762291038.5191913, "soobshenie": "alpha->beta", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.3366408, "soobshenie": "x->y", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.3380027, "soobshenie": "x->y", "tip": "ASK"}}
+{"event": {"metka": 1762291185.5394115, "soobshenie": "привет->здравствуй", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5396066, "soobshenie": "привет->здравствуй", "tip": "ASK"}}
+{"event": {"metka": 1762291185.5397632, "soobshenie": "неизвестно->...", "tip": "ASK"}}
+{"event": {"metka": 1762291185.540548, "soobshenie": "привет мир->глобальный привет", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5407093, "soobshenie": "как дела->отлично", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.540873, "soobshenie": "привет мир!->глобальный привет", "tip": "ASK"}}
+{"event": {"metka": 1762291185.541664, "soobshenie": "доброе утро->солнечного дня", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5418339, "soobshenie": "совершенно иной запрос->...", "tip": "ASK"}}
+{"event": {"metka": 1762291185.5426154, "soobshenie": "привет как дела->здорово", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5427823, "soobshenie": "расскажи про погоду->солнечно", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5429523, "soobshenie": "поделись рецептом борща->свекла", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5431023, "soobshenie": "где находится библиотека->у площади", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5432456, "soobshenie": "что нового в науке->квантовые открытия", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.543419, "soobshenie": "привет, как же дела?->здорово", "tip": "ASK"}}
+{"event": {"metka": 1762291185.5435855, "soobshenie": "расскажи про погоду завтра->солнечно", "tip": "ASK"}}
+{"event": {"metka": 1762291185.543751, "soobshenie": "поделись рецептом вкусного борща->свекла", "tip": "ASK"}}
+{"event": {"metka": 1762291185.543942, "soobshenie": "где же находится эта библиотека->у площади", "tip": "ASK"}}
+{"event": {"metka": 1762291185.5441182, "soobshenie": "что нового сегодня в науке->квантовые открытия", "tip": "ASK"}}
+{"event": {"metka": 1762291185.544898, "soobshenie": "F0001:f(x)=3*x+9", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5450351, "soobshenie": "F0001:0.450", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5451622, "soobshenie": "F0002:f(x)=5*x+1", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5459232, "soobshenie": "a->b", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5460572, "soobshenie": "F0001:f(x)=5*x+5", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5469656, "soobshenie": "a->b", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5471046, "soobshenie": "c->d", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.547241, "soobshenie": "imported=1", "tip": "SYNC"}}
+{"event": {"metka": 1762291185.5473893, "soobshenie": "c->d", "tip": "ASK"}}
+{"event": {"metka": 1762291185.548158, "soobshenie": "проба->цифра", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.55013, "soobshenie": "стимул->ответ", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5502949, "soobshenie": "стимул->ответ", "tip": "ASK"}}
+{"event": {"metka": 1762291185.5504231, "soobshenie": "3456789012", "tip": "SERIES"}}
+{"event": {"metka": 1762291185.550537, "soobshenie": "127", "tip": "NUMBER"}}
+{"event": {"metka": 1762291185.5506778, "soobshenie": "6", "tip": "EXPR"}}
+{"event": {"metka": 1762291185.5523036, "soobshenie": "F0001:f(x)=6*x+2", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.552439, "soobshenie": "F0001:0.237", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5525792, "soobshenie": "stim-0-0->resp-049", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5527117, "soobshenie": "stim-0-1->resp-074", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5528402, "soobshenie": "stim-0-2->resp-840", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5529845, "soobshenie": "F0002:f(x)=6*x+9", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5530965, "soobshenie": "F0002:0.035", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.553224, "soobshenie": "stim-1-0->resp-519", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.55335, "soobshenie": "stim-1-1->resp-219", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5534732, "soobshenie": "stim-1-2->resp-038", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5543802, "soobshenie": "F0001:f(x)=4*x+4", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.554512, "soobshenie": "F0001:0.062", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5546355, "soobshenie": "F0002:f(x)=8*x+2", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5547469, "soobshenie": "F0002:0.054", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5548608, "soobshenie": "F0003:f(x)=9*x+4", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.554993, "soobshenie": "F0003:0.480", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5551066, "soobshenie": "F0004:f(x)=9*x+8", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5552192, "soobshenie": "F0004:0.216", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5553324, "soobshenie": "F0005:f(x)=5*x+3", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5554452, "soobshenie": "F0005:0.566", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5555637, "soobshenie": "F0006:f(x)=5*x+3", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5556726, "soobshenie": "F0006:0.099", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5564315, "soobshenie": "a->b", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5565627, "soobshenie": "F0001:f(x)=8*x+8", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.557461, "soobshenie": "k0->v0", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5576007, "soobshenie": "k1->v1", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5577233, "soobshenie": "k2->v2", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5578425, "soobshenie": "k3->v3", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.557995, "soobshenie": "k4->v4", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5582438, "soobshenie": "k5->v5", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.558367, "soobshenie": "k6->v6", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5584857, "soobshenie": "k7->v7", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5586064, "soobshenie": "k8->v8", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5587244, "soobshenie": "k9->v9", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.558844, "soobshenie": "k10->v10", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5589914, "soobshenie": "k11->v11", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.560088, "soobshenie": "F0001:f(x)=4*x+9", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5602205, "soobshenie": "F0001:0.327", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5603578, "soobshenie": "stim-0-0->resp-378", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5604866, "soobshenie": "stim-0-1->resp-937", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5606115, "soobshenie": "stim-0-2->resp-618", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5609968, "soobshenie": "F0001:f(x)=4*x+9", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5611305, "soobshenie": "F0001:0.327", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5612628, "soobshenie": "stim-0-0->resp-378", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5613885, "soobshenie": "stim-0-1->resp-937", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5615113, "soobshenie": "stim-0-2->resp-618", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5616245, "soobshenie": "F0002:f(x)=2*x+9", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5617335, "soobshenie": "F0002:0.008", "tip": "FITNESS"}}
+{"event": {"metka": 1762291185.5618584, "soobshenie": "stim-1-0->resp-857", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5620062, "soobshenie": "stim-1-1->resp-480", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5621326, "soobshenie": "stim-1-2->resp-265", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5635202, "soobshenie": "alpha->beta", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.563723, "soobshenie": "alpha->beta", "tip": "ASK"}}
+{"event": {"metka": 1762291185.563875, "soobshenie": "F0001:f(x)=4*x+5", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5648422, "soobshenie": "alpha->beta", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5650022, "soobshenie": "gamma->delta", "tip": "TEACH"}}
+{"event": {"metka": 1762291185.5651302, "soobshenie": "F0001:f(x)=1*x+6", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.5652459, "soobshenie": "F0001:f(x)=8*x+8", "tip": "FORMULA"}}
+{"event": {"metka": 1762291185.565373, "soobshenie": "imported=1", "tip": "SYNC"}}
+{"event": {"metka": 1762291185.5654833, "soobshenie": "imported=1", "tip": "FORMULA_SYNC"}}
+{"event": {"metka": 1762291185.5656154, "soobshenie": "imported=1", "tip": "SYNC"}}
+{"event": {"metka": 1762291185.5657258, "soobshenie": "imported=2", "tip": "FORMULA_SYNC"}}
+{"event": {"metka": 1762291185.5658352, "soobshenie": "imported=0", "tip": "SYNC"}}
+{"event": {"metka": 1762291185.5659661, "soobshenie": "imported=3", "tip": "FORMULA_SYNC"}}
+{"event": {"metka": 1762291185.5660825, "soobshenie": "imported=0", "tip": "SYNC"}}
+{"event": {"metka": 1762291185.5661938, "soobshenie": "imported=5", "tip": "FORMULA_SYNC"}}
+{"event": {"metka": 1762291185.5663006, "soobshenie": "rounds=2,knowledge=2,formulas=11", "tip": "SWARM"}}
+{"event": {"metka": 1762291185.5664415, "soobshenie": "gamma->delta", "tip": "ASK"}}
+{"event": {"metka": 1762291185.5665786, "soobshenie": "alpha->beta", "tip": "ASK"}}
+{"event": {"metka": 1762291185.607902, "soobshenie": "alpha->beta", "tip": "TEACH"}}
