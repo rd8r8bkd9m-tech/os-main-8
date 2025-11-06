@@ -220,7 +220,7 @@ class LearningSystem:
             self.learned_patterns[pattern_id] = PatternLearning(
                 pattern_id=pattern_id,
                 query_pattern=self._extract_topic(feedback.query),
-                learned_behavior=f"For {self._extract_topic(feedback.query)} queries, user prefers: {feedback.correct_answer[:100]}",
+                learned_behavior=f"For {self._extract_topic(feedback.query)} queries, user prefers: {(feedback.correct_answer or '')[:100]}",
             )
         
         pattern = self.learned_patterns[pattern_id]

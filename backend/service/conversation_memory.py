@@ -8,7 +8,7 @@ from __future__ import annotations
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 __all__ = [
     "ConversationTurn",
@@ -247,7 +247,7 @@ class ConversationMemory:
         indices = self.topic_index[topic]
         return [self.turns[i] for i in indices if i < len(self.turns)]
     
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get memory statistics."""
         return {
             "total_turns": len(self.turns),
