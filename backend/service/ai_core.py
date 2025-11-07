@@ -215,7 +215,7 @@ class KolibriAICore:
             if self.enable_learning and self.learning:
                 # Check if we need more detail
                 should_adjust, reason = self.learning.should_adjust_response(query)
-                if should_adjust and "detail" in reason.lower():
+                if should_adjust and reason and "detail" in reason.lower():
                     response_parts.append("Detailed breakdown: Using aggregated data from specified period.")
         else:
             response_parts.append("I've processed your query. Multiple interpretations possible.")

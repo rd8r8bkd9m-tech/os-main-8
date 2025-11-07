@@ -469,7 +469,8 @@ if __name__ == "__main__":
         print("Path from 'growth_rate' to 'business_unit':")
         for i, entity_id in enumerate(path):
             entity = kg.get_entity(entity_id)
-            print(f"  {i+1}. {entity.name} ({entity.entity_type.value})")
+            if entity:
+                print(f"  {i+1}. {entity.name} ({entity.entity_type.value})")
     
     # Transitive inference
     print("\n" + "-"*70)
@@ -480,7 +481,8 @@ if __name__ == "__main__":
     for source_id, target_id, conf in inferred:
         source = kg.get_entity(source_id)
         target = kg.get_entity(target_id)
-        print(f"  {source.name} -> {target.name} (confidence: {conf:.2f})")
+        if source and target:
+            print(f"  {source.name} -> {target.name} (confidence: {conf:.2f})")
     
     # Query
     print("\n" + "-"*70)
