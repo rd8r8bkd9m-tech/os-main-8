@@ -67,10 +67,10 @@ int omega_create_meta_event_from_pattern(uint64_t pattern_id,
     hierarchy_ctx.stats.meta_events_created++;
     hierarchy_ctx.stats.patterns_abstracted++;
     
-    printf("[HierarchicalAbstraction] Created meta_event %llu from pattern %llu "
-           "(%llu → %llu → %llu, confidence: %.3f)\n",
-           meta_event_out->meta_event_id, pattern_id,
-           step_ids[0], step_ids[1], step_ids[2], confidence);
+    printf("[HierarchicalAbstraction] Created meta_event %lu from pattern %lu "
+           "(%lu → %lu → %lu, confidence: %.3f)\n",
+           (unsigned long)meta_event_out->meta_event_id, (unsigned long)pattern_id,
+           (unsigned long)step_ids[0], (unsigned long)step_ids[1], (unsigned long)step_ids[2], confidence);
     
     return 0;
 }
@@ -143,8 +143,8 @@ int omega_abstract_pattern_sequence(const omega_meta_event_t* meta_events,
     }
     
     printf("[HierarchicalAbstraction] Abstracted sequence of %d meta_events into "
-           "meta_meta_event %llu (confidence: %.4f)\n",
-           event_count, merged_meta_event_out->meta_event_id,
+           "meta_meta_event %lu (confidence: %.4f)\n",
+           event_count, (unsigned long)merged_meta_event_out->meta_event_id,
            merged_meta_event_out->confidence);
     
     return 0;

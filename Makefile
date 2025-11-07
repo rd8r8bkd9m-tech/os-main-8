@@ -52,6 +52,8 @@ test-omega:
 		kolibri_omega/src/inference_engine.c \
 		kolibri_omega/src/abstraction_engine.c \
 		kolibri_omega/src/self_reflection.c \
+		kolibri_omega/src/omega_errors.c \
+		kolibri_omega/src/omega_perf.c \
 		kolibri_omega/stubs/kf_pool_stub.c \
 		kolibri_omega/stubs/sigma_coordinator_stub.c \
 		kolibri_omega/src/solver_lobe.c \

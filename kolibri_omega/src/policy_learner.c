@@ -54,8 +54,8 @@ uint64_t omega_create_policy(omega_system_state_t state,
     policy_ctx.stats.total_policies++;
     policy_ctx.stats.active_policies++;
     
-    printf("[PolicyLearner] Created policy %llu: \"%s\" for state %d (α=%.2f)\n",
-           policy->policy_id, policy_name, state, learning_rate);
+    printf("[PolicyLearner] Created policy %lu: \"%s\" for state %d (α=%.2f)\n",
+           (unsigned long)policy->policy_id, policy_name, state, learning_rate);
     
     return policy->policy_id;
 }

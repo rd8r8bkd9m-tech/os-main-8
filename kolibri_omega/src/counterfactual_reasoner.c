@@ -55,8 +55,8 @@ uint64_t omega_create_scenario(const char* scenario_name, int64_t divergence_tim
     cf_ctx.stats.total_scenarios++;
     cf_ctx.stats.active_scenarios++;
     
-    printf("[CounterfactualReasoner] Created scenario %llu: \"%s\" (divergence at %lld)\n",
-           scenario->scenario_id, scenario_name, divergence_timestamp);
+    printf("[CounterfactualReasoner] Created scenario %lu: \"%s\" (divergence at %ld)\n",
+           (unsigned long)scenario->scenario_id, scenario_name, (long)divergence_timestamp);
     
     return scenario->scenario_id;
 }
@@ -144,8 +144,8 @@ uint64_t omega_analyze_scenario_branch(uint64_t parent_scenario_id, int depth) {
         cf_ctx.stats.max_branch_probability = branch->branch_probability;
     }
     
-    printf("[CounterfactualReasoner] Analyzed branch %llu (depth: %d, prob: %.3f)\n",
-           branch->branch_id, depth, branch->branch_probability);
+    printf("[CounterfactualReasoner] Analyzed branch %lu (depth: %d, prob: %.3f)\n",
+           (unsigned long)branch->branch_id, depth, branch->branch_probability);
     
     return branch->branch_id;
 }
@@ -185,8 +185,8 @@ int omega_apply_interventions(uint64_t scenario_id) {
     scenario->actual_agent_sync = scenario->expected_agent_sync * (0.9 + (rand() % 20) / 100.0);
     scenario->actual_pattern_count = scenario->expected_pattern_count * (0.9 + (rand() % 20) / 100.0);
     
-    printf("[CounterfactualReasoner] Applied %d interventions to scenario %llu\n",
-           scenario->intervention_count, scenario_id);
+    printf("[CounterfactualReasoner] Applied %d interventions to scenario %lu\n",
+           scenario->intervention_count, (unsigned long)scenario_id);
     printf("  Expected: %.0f canvas items, %.2f agent sync, %.0f patterns\n",
            scenario->expected_canvas_items, scenario->expected_agent_sync,
            scenario->expected_pattern_count);
@@ -248,8 +248,8 @@ int omega_detect_causal_links(uint64_t scenario_id) {
         new_links++;
     }
     
-    printf("[CounterfactualReasoner] Detected %d causal links for scenario %llu\n",
-           new_links, scenario_id);
+    printf("[CounterfactualReasoner] Detected %d causal links for scenario %lu\n",
+           new_links, (unsigned long)scenario_id);
     
     return new_links;
 }
@@ -293,8 +293,8 @@ double omega_compute_divergence(uint64_t scenario_id) {
         cf_ctx.stats.largest_divergence = scenario->divergence_ratio;
     }
     
-    printf("[CounterfactualReasoner] Divergence for scenario %llu: %.3f %s\n",
-           scenario_id, scenario->divergence_ratio,
+    printf("[CounterfactualReasoner] Divergence for scenario %lu: %.3f %s\n",
+           (unsigned long)scenario_id, scenario->divergence_ratio,
            scenario->outcome_consistent ? "(consistent)" : "(diverged)");
     
     return scenario->divergence_ratio;
