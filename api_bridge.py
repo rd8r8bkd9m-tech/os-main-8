@@ -5,11 +5,8 @@ Connects React Frontend to C Backend
 Exposes Kolibri-Omega reasoning engine via HTTP API
 """
 
-import json
 import subprocess
 import os
-import sys
-import threading
 import queue
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
@@ -130,7 +127,7 @@ class KolibriEngine:
     def _summarize_omega_output(self, lines: List[str], prompt: str) -> str:
         """Extract key insights from Omega's 10-phase output"""
         summary = []
-        summary.append(f"🧠 **Kolibri-Omega - Анализ через 10 фаз когнитивного рассуждения**\n")
+        summary.append("🧠 **Kolibri-Omega - Анализ через 10 фаз когнитивного рассуждения**\n")
         summary.append(f"📝 **Вопрос:** {prompt}\n")
         summary.append("---\n")
         
@@ -229,8 +226,8 @@ class KolibriEngine:
         if stats["policies"] > 0:
             summary.append(f"  • Обучено политик: {stats['policies']}\n")
         
-        summary.append(f"\n🎯 **Результат:** Полная когнитивная обработка через Omega завершена.\n")
-        summary.append(f"**Вывод:** На основе многоуровневого анализа через 10+ фаз рассуждения система готова к взаимодействию.\n")
+        summary.append("\n🎯 **Результат:** Полная когнитивная обработка через Omega завершена.\n")
+        summary.append("**Вывод:** На основе многоуровневого анализа через 10+ фаз рассуждения система готова к взаимодействию.\n")
         
         return "".join(summary)
     
@@ -478,8 +475,6 @@ async def get_stats(request: StatsRequest):
         
         import asyncio
         await asyncio.sleep(0.3)
-        
-        output = engine.get_all_output()
         
         # Synthetic phase stats for demo
         stats_dict = {}

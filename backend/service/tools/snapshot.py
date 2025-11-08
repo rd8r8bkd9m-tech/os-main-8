@@ -4,10 +4,8 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-import time
 from dataclasses import dataclass, asdict
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 __all__ = ["Snapshot", "SnapshotClaim", "sign_snapshot", "verify_snapshot"]
 

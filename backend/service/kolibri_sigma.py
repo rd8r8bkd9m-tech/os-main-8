@@ -14,14 +14,12 @@ Copyright (c) 2025 Кочуров Владислав Евгеньевич
 from __future__ import annotations
 
 import asyncio
-import hashlib
-import json
 import logging
 import random
 import re
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple, Callable
+from typing import Any, Dict, List, Tuple, Callable
 
 # --- Базовые компоненты, перенесенные из generative_ai.py ---
 
@@ -127,7 +125,8 @@ class BaseLobe:
             elite_count = self.pool_size // 3
             elite = self.formulas[:elite_count]
             
-            if not elite: return
+            if not elite:
+                return
 
             new_formulas = elite.copy()
             while len(new_formulas) < self.pool_size:
@@ -177,7 +176,7 @@ class LogicLobe(BaseLobe):
                         
                         if expected_result in predicted_text:
                             score += 1
-                    except:
+                    except Exception:
                         continue
             return score / (len(examples) + 1e-6)
         return calculate

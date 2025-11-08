@@ -5,7 +5,6 @@ Demonstrates the AI system functionality via HTTP API
 """
 
 import asyncio
-import json
 import httpx
 import sys
 
@@ -69,7 +68,7 @@ async def test_batch_reasoning():
             
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Batch processed successfully")
+                print("✅ Batch processed successfully")
                 print(f"   Total energy: {data.get('total_energy_j', 0):.3f}J")
                 print(f"   Total latency: {data.get('total_latency_ms', 0):.1f}ms")
                 print(f"   Batch size: {data.get('batch_size', 0)}")
@@ -95,7 +94,7 @@ async def test_stats():
             
             if response.status_code == 200:
                 data = response.json()
-                print(f"\n✅ System Statistics:")
+                print("\n✅ System Statistics:")
                 print(f"   Total queries: {data.get('total_queries', 0)}")
                 print(f"   Total energy: {data.get('total_energy_j', 0):.3f}J")
                 print(f"   Avg per query: {data.get('avg_energy_per_query_j', 0):.3f}J")
@@ -110,9 +109,9 @@ async def test_api_docs():
     print("\n" + "="*70)
     print("📚 API Documentation")
     print("="*70)
-    print(f"\n🌐 Interactive API docs available at:")
-    print(f"   http://localhost:8000/docs (Swagger UI)")
-    print(f"   http://localhost:8000/redoc (ReDoc)")
+    print("\n🌐 Interactive API docs available at:")
+    print("   http://localhost:8000/docs (Swagger UI)")
+    print("   http://localhost:8000/redoc (ReDoc)")
 
 async def main():
     """Run all tests"""
@@ -135,8 +134,8 @@ async def main():
                     return
             except Exception as e:
                 print(f"❌ Cannot connect to server: {e}")
-                print(f"\n💡 Tip: Make sure server is running:")
-                print(f"   uvicorn backend.service.main:app --reload")
+                print("\n💡 Tip: Make sure server is running:")
+                print("   uvicorn backend.service.main:app --reload")
                 return
         
         # Run tests
