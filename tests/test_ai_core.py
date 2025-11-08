@@ -1,7 +1,5 @@
 """Test suite for Kolibri AI Core reasoning engine."""
 import asyncio
-import hashlib
-import hmac
 import pytest
 
 from backend.service.ai_core import (

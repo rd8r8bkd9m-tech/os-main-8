@@ -3,7 +3,9 @@
 import subprocess
 import os
 
-os.chdir("/Users/kolibri/Downloads/os-main 8")
+# Use the script's directory as the base, assuming it's in the repo root
+script_dir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(script_dir)
 
 print("🧠 Testing Kolibri-Omega cognition_test directly...\n")
 

@@ -582,7 +582,7 @@ async def example_usage():
     
     if 'memory' in stats:
         mem = stats['memory']
-        print(f"\n💾 Memory System:")
+        print("\n💾 Memory System:")
         print(f"  Stored turns: {mem['total_turns']}")
         print(f"  Important turns: {mem['important_turns']}")
         print(f"  Unique entities: {mem['unique_entities']}")
@@ -590,7 +590,7 @@ async def example_usage():
     
     if 'learning' in stats:
         learn = stats['learning']
-        print(f"\n📚 Learning System:")
+        print("\n📚 Learning System:")
         print(f"  Total feedback: {learn['total_feedback']}")
         print(f"  Success rate: {learn['success_rate']:.1%}")
         print(f"  Learned patterns: {learn['learned_patterns']}")
