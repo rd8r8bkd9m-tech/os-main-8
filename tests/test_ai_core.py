@@ -191,6 +191,26 @@ class TestKolibriAICore:
         assert decision1.confidence == decision2.confidence
 
     @pytest.mark.asyncio
+    async def test_hybrid_mode_uses_neural_engine(self):
+        """Ensure hybrid mode produces enriched neural context."""
+        ai_core = KolibriAICore(
+            secret_key="hybrid-secret",
+            enable_llm=True,
+        )
+
+        query = "Hey Kolibri team, great to meet you!"
+        decision = await ai_core.reason(query)
+
+        assert decision.mode == InferenceMode.HYBRID
+        assert "Kolibri" in decision.response
+        assert "Additional context" in decision.response
+        assert decision.energy_cost_j >= 0.4
+
+        stages = {step.get("stage") for step in decision.reasoning_trace if isinstance(step, dict)}
+        assert "neural_inference" in stages
+        assert "prompt_selection" in stages
+
+    @pytest.mark.asyncio
     async def test_confidence_scoring(self, ai_core):
         """Test confidence scoring in decisions."""
         queries = [
@@ -201,6 +221,42 @@ class TestKolibriAICore:
         for query in queries:
             decision = await ai_core.reason(query)
             assert 0.0 <= decision.confidence <= 1.0
+
+    @pytest.mark.asyncio
+    async def test_knowledge_graph_enrichment(self, ai_core):
+        """Ensure knowledge graph insights enrich responses."""
+
+        query = "Need insight on MAU conversion funnel health"
+        decision = await ai_core.reason(query)
+
+        assert "Insight:" in decision.response
+        assert "Knowledge summary" in decision.response
+        assert any(
+            step.get("stage") == "knowledge_retrieval"
+            for step in decision.reasoning_trace
+            if isinstance(step, dict)
+        )
+        assert any(
+            step.get("stage") == "knowledge_synthesis"
+            for step in decision.reasoning_trace
+            if isinstance(step, dict)
+        )
+
+    @pytest.mark.asyncio
+    async def test_knowledge_graph_usage_stats(self, ai_core):
+        """Knowledge graph stats should track query insights."""
+
+        query = "Need insight on MAU conversion funnel health"
+        await ai_core.reason(query)
+
+        stats = ai_core.get_stats()
+        knowledge_stats = stats.get("knowledge_graph", {})
+
+        assert knowledge_stats.get("queries_with_matches", 0) >= 1
+        assert knowledge_stats.get("last_entities")
+        top_entities = knowledge_stats.get("top_entities", [])
+        assert top_entities and isinstance(top_entities[0], tuple)
+        assert knowledge_stats.get("last_keywords")
 
     @pytest.mark.asyncio
     async def test_error_recovery(self, ai_core):

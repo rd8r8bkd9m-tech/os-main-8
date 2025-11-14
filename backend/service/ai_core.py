@@ -17,12 +17,20 @@ import hmac
 import json
 import logging
 import time
+from collections import Counter
 from dataclasses import dataclass, asdict
 from enum import Enum
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from backend.service.conversation_memory import ConversationMemory
 from backend.service.learning_system import LearningSystem, FeedbackType
+from backend.service.neural_engine import NeuralReasoner
+from backend.service.knowledge_graph import (
+    EntityType,
+    KnowledgeGraph,
+    RelationType,
+)
 
 __all__ = [
     "InferenceMode",
@@ -95,6 +103,7 @@ class KolibriAICore:
         rules_database: Optional[Dict[str, Any]] = None,
         enable_memory: bool = True,
         enable_learning: bool = True,
+        enable_knowledge_graph: bool = True,
     ):
         """Initialize Kolibri AI Core.
         
@@ -118,11 +127,223 @@ class KolibriAICore:
         self.learning = LearningSystem() if enable_learning else None
         self.enable_memory = enable_memory
         self.enable_learning = enable_learning
+        self.neural_engine = NeuralReasoner() if enable_llm else None
+        self.enable_knowledge_graph = enable_knowledge_graph
+        self.knowledge_graph = (
+            self._build_default_knowledge_graph() if enable_knowledge_graph else None
+        )
+        self._knowledge_queries = 0
+        self._knowledge_entity_counter: Counter[str] = Counter()
+        self._knowledge_intent_counter: Counter[str] = Counter()
+        self._knowledge_last_entities: List[str] = []
+        self._knowledge_last_keywords: List[str] = []
 
     def _register_rule(self, name: str, rule: Dict[str, Any]) -> None:
         """Register a symbolic reasoning rule."""
         self.rules_db[name] = rule
         LOGGER.info(f"Registered rule: {name}")
+
+    def _build_default_knowledge_graph(self) -> KnowledgeGraph:
+        """Load lightweight knowledge graph from bundled data."""
+
+        graph = KnowledgeGraph()
+        data_path = Path(__file__).with_name("data") / "knowledge_base.json"
+
+        if not data_path.exists():
+            LOGGER.warning("Knowledge base file not found: %s", data_path)
+            return graph
+
+        try:
+            data = json.loads(data_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            LOGGER.error("Failed to load knowledge base: %s", exc)
+            return graph
+
+        for entity in data.get("entities", []):
+            attributes = entity.get("attributes", {})
+            if "keywords" in entity:
+                attributes.setdefault("keywords", entity.get("keywords", []))
+            if "summary" in entity:
+                attributes.setdefault("summary", entity.get("summary", ""))
+
+            graph.add_entity(
+                entity_id=entity["id"],
+                name=entity["name"],
+                entity_type=EntityType(entity.get("type", EntityType.CONCEPT.value)),
+                attributes=attributes,
+                confidence=float(entity.get("confidence", 1.0)),
+            )
+
+        for relation in data.get("relations", []):
+            try:
+                graph.add_relationship(
+                    source_id=relation["source"],
+                    target_id=relation["target"],
+                    relation_type=RelationType(relation.get("type", RelationType.RELATES_TO.value)),
+                    properties={
+                        "description": relation.get("description", ""),
+                        "weight": relation.get("weight", 1.0),
+                    },
+                    confidence=float(relation.get("confidence", 1.0)),
+                )
+            except ValueError:
+                LOGGER.warning(
+                    "Invalid relation in knowledge base: %s -> %s",
+                    relation.get("source"),
+                    relation.get("target"),
+                )
+
+        LOGGER.info(
+            "Loaded knowledge graph with %d entities and %d relations",
+            len(graph.entities),
+            len(graph.relationships),
+        )
+
+        return graph
+
+    def _tokenize_for_knowledge(self, text: str) -> List[str]:
+        """Tokenize text for knowledge graph lookup."""
+
+        tokens: List[str] = []
+        buffer: List[str] = []
+        for char in text.lower():
+            if char.isalnum():
+                buffer.append(char)
+            else:
+                if buffer:
+                    token = "".join(buffer)
+                    if len(token) >= 3:
+                        tokens.append(token)
+                    buffer.clear()
+        if buffer:
+            token = "".join(buffer)
+            if len(token) >= 3:
+                tokens.append(token)
+        return tokens
+
+    def _query_knowledge_graph(self, query: str, intent: str) -> List[Dict[str, Any]]:
+        """Return ranked knowledge graph insights for the query."""
+
+        if not self.enable_knowledge_graph or not self.knowledge_graph:
+            return []
+
+        tokens = set(self._tokenize_for_knowledge(query))
+        query_lower = query.lower()
+
+        results: List[Dict[str, Any]] = []
+
+        for entity in self.knowledge_graph.entities.values():
+            attributes = entity.attributes or {}
+            keywords = {kw.lower() for kw in attributes.get("keywords", [])}
+            matched_keywords = {
+                kw
+                for kw in keywords
+                if kw in query_lower or any(kw in token for token in tokens)
+            }
+
+            # Support mapping intent to entity relevance
+            intent_tags = {tag.lower() for tag in attributes.get("intents", [])}
+            score = float(len(matched_keywords))
+            if intent and intent.lower() in intent_tags:
+                score += 1.5
+
+            if score <= 0:
+                continue
+
+            related_entities: List[str] = []
+            relations: List[Dict[str, Any]] = []
+            for rel_id in self.knowledge_graph.outgoing_edges.get(entity.id, set()):
+                rel = self.knowledge_graph.relationships.get(rel_id)
+                if not rel:
+                    continue
+                target = self.knowledge_graph.entities.get(rel.target_id)
+                if not target:
+                    continue
+                relation_entry = {
+                    "target": target.name,
+                    "type": rel.relation_type.value,
+                    "description": rel.properties.get("description", ""),
+                }
+                relations.append(relation_entry)
+                related_entities.append(f"{target.name} ({rel.relation_type.value})")
+
+            summary = attributes.get("summary", "")
+            results.append(
+                {
+                    "entity_id": entity.id,
+                    "name": entity.name,
+                    "summary": summary,
+                    "matched_keywords": sorted(matched_keywords),
+                    "score": score,
+                    "relations": relations,
+                    "related_entities": related_entities,
+                }
+            )
+
+        results.sort(key=lambda item: item["score"], reverse=True)
+        return results[:3]
+
+    def _record_knowledge_usage(
+        self,
+        intent: str,
+        knowledge_results: List[Dict[str, Any]],
+        *,
+        aggregated_keywords: Optional[List[str]] = None,
+    ) -> None:
+        """Track usage statistics for knowledge graph hits."""
+
+        if not knowledge_results:
+            return
+
+        self._knowledge_queries += 1
+        entity_names = [result.get("name", "") for result in knowledge_results if result.get("name")]
+        self._knowledge_last_entities = entity_names
+        self._knowledge_entity_counter.update(entity_names)
+
+        if intent:
+            self._knowledge_intent_counter.update([intent])
+
+        if aggregated_keywords:
+            deduped = sorted({kw for kw in aggregated_keywords if kw})
+            self._knowledge_last_keywords = deduped
+        elif knowledge_results:
+            keywords = []
+            for result in knowledge_results:
+                keywords.extend(result.get("matched_keywords", []))
+            self._knowledge_last_keywords = sorted({kw for kw in keywords if kw})
+
+    def _build_knowledge_summary(
+        self, knowledge_results: List[Dict[str, Any]]
+    ) -> Tuple[str, List[str]]:
+        """Create a concise narrative summary of retrieved knowledge."""
+
+        if not knowledge_results:
+            return "", []
+
+        bullet_points: List[str] = []
+        aggregated_keywords: List[str] = []
+
+        for result in knowledge_results:
+            name = result.get("name", "Insight")
+            summary = result.get("summary") or "Key signal detected."
+            relations = result.get("relations", [])
+            relation_targets = ", ".join(
+                rel.get("target", "")
+                for rel in relations[:2]
+                if rel.get("target")
+            )
+
+            if relation_targets:
+                description = f"{name}: {summary} ↔ {relation_targets}"
+            else:
+                description = f"{name}: {summary}"
+
+            bullet_points.append(f"• {description}")
+            aggregated_keywords.extend(result.get("matched_keywords", []))
+
+        summary_text = "Knowledge summary:\n" + "\n".join(bullet_points)
+        deduped_keywords = sorted({kw for kw in aggregated_keywords if kw})
+        return summary_text, deduped_keywords
 
     def _apply_symbolic_reasoning(self, query: str) -> Tuple[str, List[Dict[str, Any]], float]:
         """
@@ -201,8 +422,43 @@ class KolibriAICore:
             "matched_rule_names": matching_rules
         })
         
-        # Stage 3: Generate symbolic response with context
-        response_parts = []
+        # Stage 3: Knowledge graph enrichment (optional)
+        knowledge_results = self._query_knowledge_graph(query, intent)
+        knowledge_summary = ""
+        aggregated_keywords: List[str] = []
+        if knowledge_results:
+            knowledge_summary, aggregated_keywords = self._build_knowledge_summary(knowledge_results)
+            self._record_knowledge_usage(
+                intent,
+                knowledge_results,
+                aggregated_keywords=aggregated_keywords,
+            )
+            trace.append(
+                {
+                    "stage": "knowledge_retrieval",
+                    "matches": [
+                        {
+                            "entity": result["name"],
+                            "score": result["score"],
+                            "matched_keywords": result["matched_keywords"],
+                            "relations": result["relations"],
+                        }
+                        for result in knowledge_results
+                    ],
+                }
+            )
+            if knowledge_summary:
+                trace.append(
+                    {
+                        "stage": "knowledge_synthesis",
+                        "summary": knowledge_summary,
+                        "entities": [result["name"] for result in knowledge_results],
+                        "keywords": aggregated_keywords[:5],
+                    }
+                )
+
+        # Stage 4: Generate symbolic response with context
+        response_parts: List[str] = []
         
         if intent == "business_analysis":
             response_parts.append("Based on current data patterns, quarterly growth shows 12-15% trend with seasonal Q4 variance.")
@@ -222,6 +478,18 @@ class KolibriAICore:
             if context_info:
                 response_parts.append(f"Considering context from {len(context_info.get('context_queries', []))} previous interactions.")
         
+        if knowledge_results:
+            top_knowledge = knowledge_results[0]
+            if top_knowledge["summary"]:
+                response_parts.append(f"Insight: {top_knowledge['summary']}")
+            if top_knowledge["related_entities"]:
+                response_parts.append(
+                    "Related signals: "
+                    + ", ".join(top_knowledge["related_entities"][:3])
+                )
+            if knowledge_summary:
+                response_parts.append(knowledge_summary)
+
         response = " ".join(response_parts)
         
         trace.append({
@@ -232,9 +500,10 @@ class KolibriAICore:
             "context_enhanced": bool(context_info),
         })
         
-        # Energy cost: minimal for symbolic reasoning
-        energy_cost = 0.05
-        
+        # Energy cost: minimal for symbolic reasoning + knowledge retrieval cost
+        base_cost = 0.05
+        energy_cost = base_cost + (0.02 if knowledge_results else 0.0)
+
         return response, trace, energy_cost
     
     def _extract_topic_for_learning(self, text: str) -> str:
@@ -258,40 +527,20 @@ class KolibriAICore:
         
         Returns: (response, reasoning_trace, energy_cost_j) or (None, [], 0.0) if disabled
         """
-        if not self.enable_llm:
+        if not self.enable_llm or not self.neural_engine:
             return None, [], 0.0
-        
-        trace: List[Dict[str, Any]] = []
-        
-        trace.append({
-            "stage": "llm_initialization",
-            "model_loaded": True,
-            "endpoint": self.llm_endpoint or "local"
-        })
-        
-        # Simulate LLM inference
-        try:
-            # In real deployment, this would call ollama/llama.cpp
-            llm_response = f"[LLM Response] Analyzing: '{query[:50]}...' → Generated contextual response with nuance."
-            
-            trace.append({
-                "stage": "llm_inference",
-                "tokens_generated": 45,
-                "latency_ms": 320,
-                "model": "local-llm",
-                "confidence": 0.72
-            })
-            
-            energy_cost = 1.5  # Higher energy for neural inference
-            return llm_response, trace, energy_cost
-            
-        except Exception as e:
-            LOGGER.warning(f"LLM inference failed: {e}")
-            trace.append({
-                "stage": "llm_error",
-                "error": str(e)
-            })
-            return None, trace, 0.0
+
+        result = self.neural_engine.infer(query)
+        trace: List[Dict[str, Any]] = [
+            {
+                "stage": "neural_engine_initialization",
+                "engine": "hashing-feedforward",
+                "endpoint": self.llm_endpoint or "local",
+            }
+        ]
+        trace.extend(result.trace)
+
+        return result.response, trace, result.energy_cost_j
 
     async def _decide_routing(self, query: str) -> Tuple[InferenceMode, float]:
         """
@@ -353,11 +602,17 @@ class KolibriAICore:
         if mode == InferenceMode.HYBRID:
             neural_response, neural_trace, neural_cost = await self._apply_neural_inference(query)
             combined_trace.extend(neural_trace)
-            
+
             if neural_response:
                 # Combine responses
                 combined_response = f"{sym_response}\n[Additional context] {neural_response}"
-                total_confidence = min(0.85 + 0.15 * 0.72, 1.0)  # Blend confidences
+                # Blend symbolic confidence with neural prediction confidence if available
+                neural_confidence = 0.72
+                for item in neural_trace:
+                    if item.get("stage") == "neural_inference":
+                        neural_confidence = float(item.get("confidence", neural_confidence))
+                        break
+                total_confidence = min(0.85 + 0.15 * neural_confidence, 1.0)
                 total_cost += neural_cost
         
         combined_trace.append({
@@ -487,7 +742,18 @@ class KolibriAICore:
         # Add learning stats
         if self.enable_learning and self.learning:
             stats["learning"] = self.learning.get_stats()
-        
+
+        if self.enable_knowledge_graph and self.knowledge_graph:
+            stats["knowledge_graph"] = {
+                "entities": len(self.knowledge_graph.entities),
+                "relationships": len(self.knowledge_graph.relationships),
+                "queries_with_matches": self._knowledge_queries,
+                "top_entities": self._knowledge_entity_counter.most_common(5),
+                "top_intents": self._knowledge_intent_counter.most_common(5),
+                "last_entities": self._knowledge_last_entities,
+                "last_keywords": self._knowledge_last_keywords,
+            }
+
         return stats
 
 

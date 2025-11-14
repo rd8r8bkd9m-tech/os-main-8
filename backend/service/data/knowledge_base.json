@@ -1,0 +1,130 @@
+{
+  "entities": [
+    {
+      "id": "metric_mau",
+      "name": "Monthly Active Users",
+      "type": "metric",
+      "summary": "Monthly active users (MAU) track unique engaged users and highlight engagement health across product cohorts.",
+      "keywords": [
+        "mau",
+        "monthly active",
+        "active users",
+        "активных",
+        "пользователей",
+        "engagement"
+      ],
+      "attributes": {
+        "category": "engagement",
+        "intents": ["data_question", "business_analysis"],
+        "unit": "users"
+      }
+    },
+    {
+      "id": "metric_conversion",
+      "name": "Conversion Rate",
+      "type": "metric",
+      "summary": "Conversion rate represents the share of users who complete a target action out of total visitors for a given period.",
+      "keywords": [
+        "conversion",
+        "конверсия",
+        "rate",
+        "cr",
+        "target action"
+      ],
+      "attributes": {
+        "category": "growth",
+        "intents": ["business_analysis", "data_question"],
+        "unit": "percent"
+      }
+    },
+    {
+      "id": "kolibri_analytics_playbook",
+      "name": "Kolibri Analytics Playbook",
+      "type": "document",
+      "summary": "Kolibri's analytics playbook recommends pairing MAU trends with conversion funnels to identify retention breakpoints.",
+      "keywords": [
+        "analytics",
+        "playbook",
+        "kolibri",
+        "retention",
+        "funnel"
+      ],
+      "attributes": {
+        "category": "knowledge_base",
+        "intents": ["research_plan", "business_analysis"],
+        "language": "en"
+      }
+    },
+    {
+      "id": "persona_product_manager",
+      "name": "Product Manager Persona",
+      "type": "person",
+      "summary": "Product managers monitor MAU, conversion, and feature adoption to prioritise roadmap investments.",
+      "keywords": [
+        "product manager",
+        "pm persona",
+        "дорожная",
+        "roadmap"
+      ],
+      "attributes": {
+        "category": "persona",
+        "intents": ["feature_request", "research_plan"]
+      }
+    },
+    {
+      "id": "kolibri_energy_mode",
+      "name": "Kolibri Energy-Aware Mode",
+      "type": "concept",
+      "summary": "Energy-aware mode allocates compute dynamically, preferring symbolic rules and activating neural reasoning only when signal quality requires it.",
+      "keywords": [
+        "energy",
+        "energy-aware",
+        "энергоэффективность",
+        "symbolic",
+        "neural"
+      ],
+      "attributes": {
+        "category": "architecture",
+        "intents": ["feature_request", "business_analysis"],
+        "language": "multi"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "source": "metric_mau",
+      "target": "metric_conversion",
+      "type": "relates_to",
+      "description": "MAU shifts often precede conversion changes; track cohorts to explain funnel drop-offs.",
+      "weight": 0.8
+    },
+    {
+      "source": "kolibri_analytics_playbook",
+      "target": "metric_mau",
+      "type": "derived_from",
+      "description": "Playbook chapter 2 outlines MAU instrumentation and interpretation.",
+      "weight": 0.9
+    },
+    {
+      "source": "kolibri_analytics_playbook",
+      "target": "metric_conversion",
+      "type": "derived_from",
+      "description": "Conversion audit checklist pairs retention and activation signals.",
+      "weight": 0.9
+    },
+    {
+      "source": "persona_product_manager",
+      "target": "kolibri_analytics_playbook",
+      "type": "relates_to",
+      "description": "Persona relies on analytics guidance to frame discovery interviews.",
+      "weight": 0.6
+    },
+    {
+      "source": "kolibri_energy_mode",
+      "target": "kolibri_analytics_playbook",
+      "type": "relates_to",
+      "description": "Playbook references energy-aware routing when recommending instrumentation dashboards.",
+      "weight": 0.4
+    }
+  ]
+}
