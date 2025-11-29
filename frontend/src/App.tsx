@@ -104,7 +104,7 @@ function App() {
     setLoading(true);
     
     try {
-      const result = await fetch('http://localhost:8000/api/v1/ai/reason', {
+      const result = await fetch('http://localhost:8000/api/v1/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: currentMessage, max_tokens: 1000 }),
