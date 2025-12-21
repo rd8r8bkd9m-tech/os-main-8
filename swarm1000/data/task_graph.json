@@ -1,0 +1,715 @@
+{
+  "tasks": [
+    {
+      "id": "task-0001",
+      "area": "platform",
+      "title": "Implement core platform service #1",
+      "description": "Task in Platform Foundation epic.\nArea: platform\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in platform area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented implement core platform service",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "high",
+      "deps": [],
+      "priority": 3,
+      "estimated_minutes": 15,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0002",
+      "area": "platform",
+      "title": "Refactor platform module #2",
+      "description": "Task in Platform Foundation epic.\nArea: platform\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in platform area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented refactor platform module",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [],
+      "priority": 7,
+      "estimated_minutes": 15,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0003",
+      "area": "backend",
+      "title": "Add caching layer #1",
+      "description": "Task in Backend Services epic.\nArea: backend\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in backend area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add caching layer",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [
+        "task-0002"
+      ],
+      "priority": 8,
+      "estimated_minutes": 60,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0004",
+      "area": "backend",
+      "title": "Add database migration #2",
+      "description": "Task in Backend Services epic.\nArea: backend\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in backend area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add database migration",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [
+        "task-0003",
+        "task-0002"
+      ],
+      "priority": 7,
+      "estimated_minutes": 30,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0005",
+      "area": "frontend",
+      "title": "Implement UI component #1",
+      "description": "Task in Frontend Applications epic.\nArea: frontend\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in frontend area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented implement ui component",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [
+        "task-0003"
+      ],
+      "priority": 6,
+      "estimated_minutes": 30,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0006",
+      "area": "frontend",
+      "title": "Add page route #2",
+      "description": "Task in Frontend Applications epic.\nArea: frontend\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in frontend area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add page route",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [
+        "task-0004"
+      ],
+      "priority": 4,
+      "estimated_minutes": 45,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0007",
+      "area": "rust",
+      "title": "Implement Rust module #1",
+      "description": "Task in Rust/WASM Components epic.\nArea: rust\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in rust area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented implement rust module",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [],
+      "priority": 9,
+      "estimated_minutes": 45,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0008",
+      "area": "rust",
+      "title": "Implement Rust module #2",
+      "description": "Task in Rust/WASM Components epic.\nArea: rust\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in rust area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented implement rust module",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "high",
+      "deps": [],
+      "priority": 7,
+      "estimated_minutes": 60,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0009",
+      "area": "protocol",
+      "title": "Add protocol tests #1",
+      "description": "Task in Protocol Implementation epic.\nArea: protocol\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in protocol area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add protocol tests",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [],
+      "priority": 3,
+      "estimated_minutes": 45,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0010",
+      "area": "protocol",
+      "title": "Document protocol spec #2",
+      "description": "Task in Protocol Implementation epic.\nArea: protocol\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in protocol area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented document protocol spec",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [],
+      "priority": 8,
+      "estimated_minutes": 45,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0011",
+      "area": "devops",
+      "title": "Add monitoring dashboard #1",
+      "description": "Task in DevOps & Infrastructure epic.\nArea: devops\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in devops area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add monitoring dashboard",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [],
+      "priority": 3,
+      "estimated_minutes": 30,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0012",
+      "area": "devops",
+      "title": "Add CI/CD pipeline #2",
+      "description": "Task in DevOps & Infrastructure epic.\nArea: devops\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in devops area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add ci/cd pipeline",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [],
+      "priority": 8,
+      "estimated_minutes": 15,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0013",
+      "area": "docs",
+      "title": "Update runbook #1",
+      "description": "Task in Documentation epic.\nArea: docs\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in docs area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented update runbook",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [],
+      "priority": 7,
+      "estimated_minutes": 30,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0014",
+      "area": "docs",
+      "title": "Create tutorial #2",
+      "description": "Task in Documentation epic.\nArea: docs\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in docs area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented create tutorial",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "high",
+      "deps": [],
+      "priority": 7,
+      "estimated_minutes": 30,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0015",
+      "area": "design",
+      "title": "Add accessibility features #1",
+      "description": "Task in Design System epic.\nArea: design\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in design area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add accessibility features",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [],
+      "priority": 3,
+      "estimated_minutes": 60,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0016",
+      "area": "design",
+      "title": "Create design system #2",
+      "description": "Task in Design System epic.\nArea: design\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in design area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented create design system",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [],
+      "priority": 3,
+      "estimated_minutes": 30,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0017",
+      "area": "qa",
+      "title": "Implement integration test #1",
+      "description": "Task in Quality Assurance epic.\nArea: qa\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in qa area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented implement integration test",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "low",
+      "deps": [],
+      "priority": 5,
+      "estimated_minutes": 45,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0018",
+      "area": "qa",
+      "title": "Add unit tests #2",
+      "description": "Task in Quality Assurance epic.\nArea: qa\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in qa area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented add unit tests",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [],
+      "priority": 9,
+      "estimated_minutes": 15,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0019",
+      "area": "security",
+      "title": "Implement rate limiting #1",
+      "description": "Task in Security Hardening epic.\nArea: security\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in security area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented implement rate limiting",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "high",
+      "deps": [],
+      "priority": 5,
+      "estimated_minutes": 45,
+      "status": "pending",
+      "assigned_to": null
+    },
+    {
+      "id": "task-0020",
+      "area": "security",
+      "title": "Implement rate limiting #2",
+      "description": "Task in Security Hardening epic.\nArea: security\nGoal alignment: Demo: Build unified Kolibri platform\n\nThis task contributes to the overall Kolibri AI platform consolidation.",
+      "inputs": [
+        "Source code in security area",
+        "Project requirements",
+        "Design specifications"
+      ],
+      "expected_outputs": [
+        "Implemented implement rate limiting",
+        "Updated tests",
+        "Documentation"
+      ],
+      "tests": [
+        "Unit tests pass",
+        "Integration tests pass",
+        "No linting errors"
+      ],
+      "definition_of_done": [
+        "Code implemented and tested",
+        "Tests passing",
+        "Documentation updated",
+        "Code reviewed and approved"
+      ],
+      "risk": "medium",
+      "deps": [],
+      "priority": 8,
+      "estimated_minutes": 60,
+      "status": "pending",
+      "assigned_to": null
+    }
+  ],
+  "epics": {
+    "Platform Foundation": [
+      "task-0001",
+      "task-0002"
+    ],
+    "Backend Services": [
+      "task-0003",
+      "task-0004"
+    ],
+    "Frontend Applications": [
+      "task-0005",
+      "task-0006"
+    ],
+    "Rust/WASM Components": [
+      "task-0007",
+      "task-0008"
+    ],
+    "Protocol Implementation": [
+      "task-0009",
+      "task-0010"
+    ],
+    "DevOps & Infrastructure": [
+      "task-0011",
+      "task-0012"
+    ],
+    "Documentation": [
+      "task-0013",
+      "task-0014"
+    ],
+    "Design System": [
+      "task-0015",
+      "task-0016"
+    ],
+    "Quality Assurance": [
+      "task-0017",
+      "task-0018"
+    ],
+    "Security Hardening": [
+      "task-0019",
+      "task-0020"
+    ]
+  }
+}
