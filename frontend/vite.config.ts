@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.KOLIBRI_PUBLIC_BASE_URL || '/os-main-8/',
+  base: process.env.KOLIBRI_PUBLIC_BASE_URL || './',
   plugins: [react()],
   server: {
     host: true,
