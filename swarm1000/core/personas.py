@@ -128,7 +128,9 @@ def generate_personas(count: int = 1000) -> List[Persona]:
             if role in ["PM-Chief", "PM"]:
                 seniority = "Principal"
             elif role == "Tech Lead":
-                seniority = random.choice(["Senior", "Staff", "Principal"])
+                # Tech Leads should be senior - weighted towards Staff/Principal
+                weights = [0.2, 0.5, 0.3]  # Senior, Staff, Principal
+                seniority = random.choices(["Senior", "Staff", "Principal"], weights=weights)[0]
             else:
                 weights = [0.2, 0.35, 0.3, 0.1, 0.05]  # Junior to Principal
                 seniority = random.choices(SENIORITY_LEVELS, weights=weights)[0]

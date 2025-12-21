@@ -51,13 +51,29 @@ def get_default_config() -> SwarmConfig:
     """Get default configuration based on current environment."""
     repo_root = Path(os.getcwd())
     
-    # Try to find git root
-    current = repo_root
-    while current != current.parent:
-        if (current / ".git").exists():
-            repo_root = current
-            break
-        current = current.parent
+    # Try to find git root using git command first (faster)
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            cwd=repo_root
+        )
+        if result.returncode == 0:
+            repo_root = Path(result.stdout.strip())
+    except Exception:
+        # Fallback to manual search with max depth
+        current = repo_root
+        max_depth = 10
+        depth = 0
+        while current != current.parent and depth < max_depth:
+            if (current / ".git").exists():
+                repo_root = current
+                break
+            current = current.parent
+            depth += 1
     
     workspace_root = repo_root.parent / f"{repo_root.name}-swarm"
     

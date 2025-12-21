@@ -88,7 +88,7 @@ class TaskPlanner:
                 
                 # Create dependencies (some tasks depend on earlier tasks)
                 deps = []
-                if i > 0 and random.random() < 0.3:
+                if i > 0 and epic_task_ids and random.random() < 0.3:
                     # Depend on 1-2 previous tasks in this epic
                     num_deps = min(random.randint(1, 2), len(epic_task_ids))
                     deps = random.sample(epic_task_ids, num_deps)

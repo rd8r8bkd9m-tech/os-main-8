@@ -179,7 +179,9 @@ def cmd_run(args):
                     state.update_task_status(task.id, "in_progress")
                     
                     # Assign persona
-                    persona = personas[hash(task.id) % len(personas)] if personas else None
+                    persona = None
+                    if personas and len(personas) > 0:
+                        persona = personas[hash(task.id) % len(personas)]
                     
                     future = executor.submit(
                         execute_task,

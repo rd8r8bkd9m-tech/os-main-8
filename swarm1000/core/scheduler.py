@@ -43,7 +43,11 @@ class TaskScheduler:
                 return levels[task_id]
             
             task = self.task_graph.get_task(task_id)
-            if not task or not task.deps:
+            if not task:
+                levels[task_id] = 0
+                return 0
+            
+            if not task.deps:
                 levels[task_id] = 0
                 return 0
             
