@@ -46,3 +46,8 @@ kolibri-rc-*.tar.gz
 kolibri-rc-*.sha256
 _codeql_build_dir/
 _codeql_detected_source_root
+
+# Swarm-1000
+swarm1000/data/state.sqlite
+swarm1000/data/*.log
+swarm1000/data/.swarm_changes.log

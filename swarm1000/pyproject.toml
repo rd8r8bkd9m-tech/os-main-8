@@ -1,0 +1,40 @@
+[project]
+name = "kolibri-swarm1000"
+version = "1.0.0"
+description = "Kolibri Swarm-1000 Orchestrator - Manage 1000 logical AI agents for parallel development"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Kolibri AI Team", email = "swarm@kolibri.ai"}
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.21",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+swarm1000 = "swarm1000.swarm:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
