@@ -59,3 +59,62 @@ budgets:
   coverage_min_lines: 75
   coverage_min_branches: 60
 ```
+
+## Kolibri Swarm-1000 Orchestrator
+
+Репозиторий включает систему **Kolibri Swarm-1000 Orchestrator** — оркестратор для управления 1000 логическими агентами, выполняющими задачи параллельно.
+
+### Архитектура Swarm-1000
+
+- **Worktree per worker**: каждый воркер работает в изолированном git worktree
+- **Логическая модель**: 1000 агентов распределены по ролям (Backend, Frontend, Rust, DevOps, QA, Security, Design)
+- **Физическое выполнение**: ограничено пулом воркеров (по умолчанию 20 параллельных)
+- **Безопасность**: никаких удалений/перемещений вне репозитория; DRY RUN для опасных операций
+
+### Команды сборки и тестирования
+
+Для основного репозитория:
+```bash
+# Сборка (если применимо)
+make build
+
+# Тесты
+pytest tests/
+
+# Линтинг Python
+ruff check .
+```
+
+Для Swarm-1000:
+```bash
+# Запуск оркестратора
+python -m swarm1000.swarm --help
+
+# Полный workflow
+python -m swarm1000.swarm inventory --roots /path/to/projects
+python -m swarm1000.swarm plan --goal "Цель" --budget-agents 1000
+python -m swarm1000.swarm run --concurrency 20 --mode worktree --quality-gate strict
+
+# Статус и отчеты
+python -m swarm1000.swarm status
+python -m swarm1000.swarm export --output results.json
+```
+
+### Протокол отчета для агентов
+
+Агенты Swarm-1000 следуют протоколу:
+
+1. **PLAN** → Получить задачу с зависимостями и DoD
+2. **CHANGES** → Применить изменения через Codex MCP в worktree
+3. **COMMANDS RUN** → Выполнить quality gate (lint/test/build)
+4. **NEXT** → Закоммитить и перейти к следующей задаче
+
+### Безопасность и ограничения
+
+- ✓ Все изменения только внутри репозитория/worktrees
+- ✓ Никаких деструктивных операций вне workspace
+- ✓ DRY RUN для массовых переименований/удалений
+- ✓ Секреты не логируются и не коммитятся
+- ✓ Quality gate предотвращает некорректный код
+
+См. документацию в `docs/SWARM1000.md`, `docs/GOVERNANCE.md`, `docs/SAFETY.md` для деталей.
