@@ -57,3 +57,16 @@ swarm1000/data/inventory.json
 swarm1000/data/task_graph.json
 swarm1000/data/personas_1000.jsonl
 swarm1000/data/*_results.json
+# Temp files and artifacts
+temp.ks
+console_test.ks
+*.tmp
+
+# Ignore Cyrillic and other suspicious root files
+/cifry*
+/danniye*
+/dlina*
+/emkost*
+/poziciya*
+/pozitsiya*
+/цифры*

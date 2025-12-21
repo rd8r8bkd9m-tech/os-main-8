@@ -505,19 +505,68 @@ async def ai_reason(
     return result
 
 
+@router.post("/api/v1/ai/chat")
+async def ai_chat(
+    request: InferenceRequest,
+    settings: Settings = Depends(get_settings),
+) -> Dict[str, Any]:
+    """
+    Chat endpoint для генеративной ИИ системы.
+    
+    Публичный endpoint без авторизации для использования в UI.
+    Возвращает поле 'message' для совместимости с frontend.
+    """
+    start = time.perf_counter()
+    
+    try:
+        enforce_prompt_policy(request.prompt, settings)
+    except ModerationError as exc:
+        INFER_REQUESTS.labels(outcome="error").inc()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"code": exc.code, "message": exc.message, "topics": exc.topics},
+        ) from exc
+    
+    try:
+        result = await _generative_ai.reason(request.prompt)
+    except Exception as exc:
+        INFER_REQUESTS.labels(outcome="error").inc()
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Generative AI failed: {exc}",
+        ) from exc
+    
+    elapsed_ms = (time.perf_counter() - start) * 1000.0
+    
+    INFER_REQUESTS.labels(outcome="success").inc()
+    INFER_LATENCY.labels(provider="generative_decimal_ai").observe(elapsed_ms / 1000.0)
+    
+    # Возвращаем с полем 'message' для совместимости с frontend
+    return {
+        "message": result["response"],
+        "response": result["response"],
+        "confidence": result["confidence"],
+        "mode": result["mode"],
+        "latency_ms": elapsed_ms,
+        "generation": result["generation"],
+        "formula_fitness": result["formula_fitness"],
+    }
+
+
 @router.post("/api/v1/ai/teach")
 async def ai_teach(
     input_text: str,
     expected_output: str,
     evolve_generations: int = 5,
     settings: Settings = Depends(get_settings),
-    context: AuthContext = Depends(get_current_identity),
 ) -> Dict[str, Any]:
     """
     Обучить генеративную ИИ на примере.
     
     Добавляет пример (вход → выход) и запускает эволюцию формул.
     Система самообучается, улучшая фитнес через генетический алгоритм.
+    
+    Публичный endpoint для использования в UI обучения.
     """
     if not input_text or not expected_output:
         raise HTTPException(
@@ -536,7 +585,7 @@ async def ai_teach(
     except Exception as exc:
         log_audit_event(
             event_type="kolibri_ai.teach.error",
-            actor=context.subject,
+            actor="public-ui",
             payload={"error": str(exc)},
             settings=settings,
         )
@@ -548,7 +597,7 @@ async def ai_teach(
     # Log successful learning
     log_audit_event(
         event_type="kolibri_ai.teach",
-        actor=context.subject,
+        actor="public-ui",
         payload={
             "input_length": len(input_text),
             "output_length": len(expected_output),
@@ -562,10 +611,12 @@ async def ai_teach(
 
 
 @router.get("/api/v1/ai/generative/stats")
-async def ai_generative_stats(
-    context: AuthContext = Depends(get_current_identity),
-) -> Dict[str, Any]:
-    """Возвращает статистику генеративной ИИ системы."""
+async def ai_generative_stats() -> Dict[str, Any]:
+    """Возвращает статистику генеративной ИИ системы.
+    
+    Этот endpoint доступен без авторизации для отображения
+    публичной статистики в UI.
+    """
     return _generative_ai.get_stats()
 
 
