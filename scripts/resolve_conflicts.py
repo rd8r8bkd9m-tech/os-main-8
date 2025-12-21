@@ -24,6 +24,14 @@ from typing import (
 )
 from types import ModuleType
 
+__all__ = [
+    "KONFLIKT_START",
+    "KONFLIKT_DELIM",
+    "KONFLIKT_END",
+    "ResolveReport",
+    "postroit_otchet",
+]
+
 KONFLIKT_START = "<<<<<<<"
 KONFLIKT_DELIM = "======="
 KONFLIKT_END = ">>>>>>>"
