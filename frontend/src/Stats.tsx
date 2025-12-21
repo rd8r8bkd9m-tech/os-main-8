@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react';
 
 interface AIStats {
-  queries_processed: number;
+  total_queries?: number;
+  queries_processed?: number;
   formula_pool: {
     generation: number;
     examples_count: number;
     best_fitness: number;
     pool_size: number;
+    avg_fitness?: number;
   };
+  mode?: string;
+  auto_learn_enabled?: boolean;
+  pending_learning_queue?: number;
 }
 
 export function Stats() {
   const [stats, setStats] = useState<AIStats | null>(null);
   const [error, setError] = useState('');
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const fetchStats = async () => {
     try {
@@ -22,7 +28,7 @@ export function Stats() {
       setStats(data);
       setError('');
     } catch (err) {
-      setError(String(err));
+      setError(err instanceof Error ? err.message : 'Ошибка загрузки');
     }
   };
 
@@ -34,57 +40,244 @@ export function Stats() {
 
   if (error) {
     return (
-      <div style={{background:'#dc2626', color:'#fff', padding:'15px', borderRadius:'8px', fontSize:'14px'}}>
-        Ошибка загрузки статистики: {error}
+      <div className="card" style={{
+        background: 'rgba(239, 68, 68, 0.1)',
+        border: '1px solid rgba(239, 68, 68, 0.3)'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          color: '#ef4444'
+        }}>
+          <span>⚠️</span>
+          <span>Статистика недоступна: {error}</span>
+          <button
+            onClick={fetchStats}
+            style={{
+              marginLeft: 'auto',
+              padding: '6px 12px',
+              background: 'transparent',
+              border: '1px solid #ef4444',
+              borderRadius: '6px',
+              color: '#ef4444',
+              cursor: 'pointer',
+              fontSize: '0.8rem'
+            }}
+          >
+            Повторить
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div style={{background:'#1e293b', padding:'20px', borderRadius:'8px', textAlign:'center', color:'#94a3b8'}}>
-        Загрузка статистики...
+      <div className="card" style={{
+        background: 'rgba(30, 41, 59, 0.6)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(71, 85, 105, 0.5)'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '10px',
+          padding: '20px',
+          color: '#94a3b8'
+        }}>
+          <div style={{
+            width: '20px',
+            height: '20px',
+            border: '2px solid #475569',
+            borderTopColor: '#10b981',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite'
+          }} />
+          <span>Загрузка статистики...</span>
+        </div>
       </div>
     );
   }
 
+  const statItems = [
+    {
+      label: 'Поколение',
+      value: stats.formula_pool.generation,
+      color: '#10b981',
+      icon: '🧬'
+    },
+    {
+      label: 'Примеров',
+      value: stats.formula_pool.examples_count,
+      color: '#3b82f6',
+      icon: '📚'
+    },
+    {
+      label: 'Лучший фитнес',
+      value: `${(stats.formula_pool.best_fitness * 100).toFixed(1)}%`,
+      color: '#f59e0b',
+      icon: '🏆'
+    },
+    {
+      label: 'Размер пула',
+      value: stats.formula_pool.pool_size,
+      color: '#8b5cf6',
+      icon: '🔬'
+    }
+  ];
+
   return (
-    <div style={{background:'#1e293b', borderRadius:'12px', padding:'25px', border:'1px solid #334155'}}>
-      <h3 style={{marginBottom:'20px', fontSize:'1.2rem', color:'#22c55e'}}>📊 Статистика AI</h3>
-      
-      <div style={{display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'15px', fontSize:'14px'}}>
-        <div style={{background:'#0f172a', padding:'15px', borderRadius:'8px'}}>
-          <div style={{color:'#94a3b8', marginBottom:'5px'}}>Поколение</div>
-          <div style={{fontSize:'24px', fontWeight:'bold', color:'#4ade80'}}>
-            {stats.formula_pool.generation}
+    <div className="card" style={{
+      background: 'rgba(30, 41, 59, 0.6)',
+      backdropFilter: 'blur(12px)',
+      border: '1px solid rgba(71, 85, 105, 0.5)',
+      transition: 'all 0.25s ease'
+    }}>
+      {/* Header */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 0
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          <span style={{ fontSize: '1.5rem' }}>📊</span>
+          <h3 style={{
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            color: '#10b981'
+          }}>
+            Статистика ИИ
+          </h3>
+          {stats.auto_learn_enabled && (
+            <span style={{
+              padding: '3px 8px',
+              background: 'rgba(34, 197, 94, 0.2)',
+              color: '#22c55e',
+              borderRadius: '6px',
+              fontSize: '0.7rem',
+              fontWeight: 600,
+              textTransform: 'uppercase'
+            }}>
+              Авто-обучение
+            </span>
+          )}
+        </div>
+        <span style={{
+          color: '#64748b',
+          fontSize: '1.5rem',
+          transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0)',
+          transition: 'transform 0.2s ease'
+        }}>
+          ▼
+        </span>
+      </button>
+
+      {/* Content */}
+      {!isCollapsed && (
+        <div style={{
+          marginTop: '20px',
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          {/* Stats Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+            gap: '12px',
+            marginBottom: '16px'
+          }}>
+            {statItems.map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: 'rgba(15, 23, 42, 0.8)',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  textAlign: 'center',
+                  border: '1px solid rgba(71, 85, 105, 0.3)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>
+                  {item.icon}
+                </div>
+                <div style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  color: item.color,
+                  fontFamily: 'monospace',
+                  marginBottom: '4px'
+                }}>
+                  {item.value}
+                </div>
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: '#64748b',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  {item.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Additional Info */}
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '16px',
+            padding: '14px',
+            background: 'rgba(15, 23, 42, 0.5)',
+            borderRadius: '10px',
+            fontSize: '0.85rem'
+          }}>
+            {stats.total_queries !== undefined && (
+              <div>
+                <span style={{ color: '#64748b' }}>Запросов:</span>{' '}
+                <span style={{ color: '#10b981', fontWeight: 600 }}>
+                  {stats.total_queries}
+                </span>
+              </div>
+            )}
+            {stats.formula_pool.avg_fitness !== undefined && (
+              <div>
+                <span style={{ color: '#64748b' }}>Средний фитнес:</span>{' '}
+                <span style={{ color: '#f59e0b', fontWeight: 600 }}>
+                  {(stats.formula_pool.avg_fitness * 100).toFixed(1)}%
+                </span>
+              </div>
+            )}
+            {stats.pending_learning_queue !== undefined && stats.pending_learning_queue > 0 && (
+              <div>
+                <span style={{ color: '#64748b' }}>В очереди обучения:</span>{' '}
+                <span style={{ color: '#3b82f6', fontWeight: 600 }}>
+                  {stats.pending_learning_queue}
+                </span>
+              </div>
+            )}
+            <div style={{ marginLeft: 'auto' }}>
+              <span style={{ color: '#64748b' }}>Режим:</span>{' '}
+              <span style={{ color: '#8b5cf6', fontWeight: 600 }}>
+                {stats.mode || 'generative_decimal'}
+              </span>
+            </div>
           </div>
         </div>
-
-        <div style={{background:'#0f172a', padding:'15px', borderRadius:'8px'}}>
-          <div style={{color:'#94a3b8', marginBottom:'5px'}}>Примеров обучения</div>
-          <div style={{fontSize:'24px', fontWeight:'bold', color:'#4ade80'}}>
-            {stats.formula_pool.examples_count}
-          </div>
-        </div>
-
-        <div style={{background:'#0f172a', padding:'15px', borderRadius:'8px'}}>
-          <div style={{color:'#94a3b8', marginBottom:'5px'}}>Лучший фитнес</div>
-          <div style={{fontSize:'24px', fontWeight:'bold', color:'#fbbf24'}}>
-            {stats.formula_pool.best_fitness.toFixed(4)}
-          </div>
-        </div>
-
-        <div style={{background:'#0f172a', padding:'15px', borderRadius:'8px'}}>
-          <div style={{color:'#94a3b8', marginBottom:'5px'}}>Размер пула</div>
-          <div style={{fontSize:'24px', fontWeight:'bold', color:'#4ade80'}}>
-            {stats.formula_pool.pool_size}
-          </div>
-        </div>
-      </div>
-
-      <div style={{marginTop:'15px', padding:'12px', background:'#0f172a', borderRadius:'8px', fontSize:'13px', color:'#cbd5e1'}}>
-        Запросов обработано: <span style={{color:'#4ade80', fontWeight:'bold'}}>{stats.queries_processed}</span>
-      </div>
+      )}
     </div>
   );
 }

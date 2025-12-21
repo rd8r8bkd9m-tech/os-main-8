@@ -46,3 +46,17 @@ kolibri-rc-*.tar.gz
 kolibri-rc-*.sha256
 _codeql_build_dir/
 _codeql_detected_source_root
+
+# Temp files and artifacts
+temp.ks
+console_test.ks
+*.tmp
+
+# Ignore Cyrillic and other suspicious root files
+/cifry*
+/danniye*
+/dlina*
+/emkost*
+/poziciya*
+/pozitsiya*
+/цифры*
