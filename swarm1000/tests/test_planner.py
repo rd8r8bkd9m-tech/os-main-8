@@ -1,8 +1,5 @@
 """Tests for task planner."""
 
-import pytest
-from pathlib import Path
-
 from swarm1000.core.planner import TaskPlanner, create_demo_task_graph
 from swarm1000.core.inventory import ProjectInventoryItem
 

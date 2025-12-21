@@ -1,6 +1,5 @@
 """Codex MCP integration for AI-powered code changes."""
 
-import json
 import subprocess
 from pathlib import Path
 from typing import Optional, Dict, Any, List
@@ -83,15 +82,6 @@ class CodexMCP:
             return self._mock_apply_change(workdir, instruction, files_hint)
         
         try:
-            # Build request
-            request = {
-                "instruction": instruction,
-                "workdir": str(workdir),
-                "files_hint": files_hint or [],
-                "approval_policy": approval_policy,
-                "sandbox": sandbox,
-            }
-            
             # Call MCP API (this would be actual HTTP/RPC call)
             # For now, mock it
             logger.warning("Real Codex MCP not implemented, using mock")

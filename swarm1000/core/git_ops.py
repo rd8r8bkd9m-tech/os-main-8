@@ -129,7 +129,7 @@ class GitOps:
             if author:
                 cmd.extend(["--author", author])
             
-            result = subprocess.run(
+            subprocess.run(
                 cmd,
                 cwd=worktree_path,
                 check=True,

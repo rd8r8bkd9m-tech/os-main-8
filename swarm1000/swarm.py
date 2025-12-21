@@ -10,16 +10,15 @@ import json
 import argparse
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Optional
 
-from .core.config import get_default_config, SwarmConfig
-from .core.logger import setup_logger, logger
+from .core.config import get_default_config
+from .core.logger import logger
 from .core.state import StateManager, TaskRecord
 from .core.personas import generate_personas, save_personas_jsonl, load_personas_jsonl
 from .core.inventory import InventoryScanner, save_inventory, load_inventory
-from .core.planner import TaskPlanner, create_demo_task_graph
+from .core.planner import TaskPlanner
 from .core.scheduler import TaskScheduler
-from .core.tasks import TaskGraph, Task
+from .core.tasks import TaskGraph
 from .core.git_ops import GitOps
 from .core.codex_mcp import CodexMCP
 from .core.quality_gate import QualityGate, QualityGateMode

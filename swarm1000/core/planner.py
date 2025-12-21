@@ -2,7 +2,6 @@
 
 import random
 from typing import List, Dict
-from pathlib import Path
 
 from .logger import logger
 from .tasks import Task, TaskGraph

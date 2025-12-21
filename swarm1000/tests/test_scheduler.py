@@ -1,7 +1,5 @@
 """Tests for task scheduler."""
 
-import pytest
-
 from swarm1000.core.scheduler import TaskScheduler
 from swarm1000.core.planner import create_demo_task_graph
 

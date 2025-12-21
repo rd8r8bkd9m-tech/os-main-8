@@ -1,6 +1,5 @@
 """Tests for persona generation."""
 
-import pytest
 from pathlib import Path
 import tempfile
 
@@ -8,7 +7,6 @@ from swarm1000.core.personas import (
     generate_personas,
     save_personas_jsonl,
     load_personas_jsonl,
-    ROLE_DISTRIBUTION,
 )
 
 

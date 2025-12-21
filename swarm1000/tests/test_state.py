@@ -1,6 +1,5 @@
 """Tests for state management."""
 
-import pytest
 import tempfile
 from pathlib import Path
 

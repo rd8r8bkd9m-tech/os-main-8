@@ -1,6 +1,6 @@
 """Task scheduler with dependency resolution."""
 
-from typing import List, Set, Dict, Optional
+from typing import List, Set, Dict
 from dataclasses import dataclass
 
 from .logger import logger

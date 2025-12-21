@@ -1,7 +1,6 @@
 """Inventory scanning for directories and repositories."""
 
 import json
-import os
 import subprocess
 from dataclasses import dataclass, asdict
 from pathlib import Path
@@ -225,6 +224,7 @@ class InventoryScanner:
                 if len(languages) > 20:
                     break
         except Exception:
+            # Ignore errors during language detection (permissions, invalid files, etc.)
             pass
         
         return sorted(list(languages))
@@ -244,6 +244,7 @@ class InventoryScanner:
                 if file_count > 10000:
                     break
         except Exception:
+            # Ignore errors during size calculation (permissions, broken symlinks, etc.)
             pass
         
         return total_size // 1024, file_count
@@ -260,6 +261,7 @@ class InventoryScanner:
             if result.returncode == 0:
                 return len(result.stdout.strip().split('\n'))
         except Exception:
+            # Ignore git errors (not a repo, git not installed, timeout, etc.)
             pass
         return 0
     
