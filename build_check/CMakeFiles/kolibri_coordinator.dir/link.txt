@@ -1,1 +1,0 @@
-/usr/bin/cc -Wl,--dependency-file=CMakeFiles/kolibri_coordinator.dir/link.d CMakeFiles/kolibri_coordinator.dir/apps/kolibri_coordinator.c.o -o kolibri_coordinator  libkolibri_core.a /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib/x86_64-linux-gnu/libsqlite3.so -lm

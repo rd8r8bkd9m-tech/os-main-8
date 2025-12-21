@@ -1,6 +1,8 @@
 # Build artifacts
 /build/
 /build-fuzz/
+/build_check/
+build*/
 *.o
 *.a
 compile_commands.json
@@ -51,3 +53,7 @@ _codeql_detected_source_root
 swarm1000/data/state.sqlite
 swarm1000/data/*.log
 swarm1000/data/.swarm_changes.log
+swarm1000/data/inventory.json
+swarm1000/data/task_graph.json
+swarm1000/data/personas_1000.jsonl
+swarm1000/data/*_results.json
