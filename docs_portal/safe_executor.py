@@ -139,9 +139,16 @@ def validate_ast(tree: ast.AST) -> None:
                         f"Unsafe function call: {func_name}() is not allowed. "
                         f"Only these built-ins are permitted: {', '.join(sorted(SAFE_BUILTINS))}"
                     )
-            elif isinstance(node, ast.Call) and not isinstance(node.func, ast.Attribute):
-                # Allow method calls like list.append(), but not other complex calls
+            elif isinstance(node.func, ast.Attribute):
+                # Allow method calls like list.append(), str.upper(), etc.
+                # These are safe as they operate on existing objects
                 pass
+            else:
+                # Disallow other complex call patterns
+                raise SafeExecutionError(
+                    "Complex function calls are not allowed. "
+                    "Only simple function calls and method calls are permitted."
+                )
         
         # Prevent import statements
         if isinstance(node, (ast.Import, ast.ImportFrom)):
@@ -194,7 +201,14 @@ def time_limit(seconds: int = 5):
         ExecutionTimeout: If execution exceeds time limit
         
     Note:
-        Uses SIGALRM on Unix systems. On Windows, timeout is not enforced.
+        Uses SIGALRM on Unix systems. On Windows, timeout enforcement
+        is not available and code may run indefinitely. Production
+        deployments should use Unix-based systems or implement
+        alternative timeout mechanisms (e.g., multiprocessing with timeout).
+        
+    Warning:
+        On Windows, this function does not enforce timeouts and may
+        allow infinite loops. This is a known limitation.
     """
     def signal_handler(signum, frame):
         raise ExecutionTimeout(f"Execution exceeded {seconds} second time limit")
@@ -210,7 +224,15 @@ def time_limit(seconds: int = 5):
             signal.signal(signal.SIGALRM, old_handler)
     except AttributeError:
         # SIGALRM not available (Windows)
-        # Fall back to no timeout - examples should be fast anyway
+        # Log warning in production use
+        import warnings
+        warnings.warn(
+            "Timeout enforcement not available on this platform (Windows). "
+            "Code execution time is not limited. Consider using Unix-based "
+            "systems for production deployments.",
+            RuntimeWarning,
+            stacklevel=2
+        )
         yield
 
 

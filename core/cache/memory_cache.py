@@ -95,11 +95,20 @@ class LRUCache(Generic[T]):
 
 
 def make_cache_key(*args: Any, **kwargs: Any) -> str:
+    """Generate cache key from function arguments.
+    
+    Raises:
+        TypeError: If arguments cannot be serialized
+    """
     try:
         key_data = pickle.dumps((args, sorted(kwargs.items())))
         return hashlib.sha256(key_data).hexdigest()
-    except (pickle.PicklingError, TypeError):
-        return str((args, sorted(kwargs.items())))
+    except (pickle.PicklingError, TypeError) as e:
+        # Cannot pickle - raise error instead of unsafe fallback
+        raise TypeError(
+            f"Cannot create cache key: arguments are not picklable. "
+            f"Error: {e}"
+        ) from e
 
 
 def cached(

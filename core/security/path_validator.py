@@ -48,12 +48,12 @@ def validate_safe_path(
     
     # Get absolute path
     try:
+        # Validate path exists if allow_create is False
+        if not allow_create and not path_obj.exists():
+            raise FileNotFoundError(f"Path does not exist: {path_obj}")
+        
         # Resolve to get canonical path (follows symlinks, removes ..)
-        if path_obj.exists() or allow_create:
-            abs_path = path_obj.resolve()
-        else:
-            # For non-existent paths with allow_create=False
-            abs_path = path_obj.absolute().resolve()
+        abs_path = path_obj.resolve()
     except (OSError, RuntimeError) as e:
         raise PathTraversalError(f"Invalid path: {e}") from e
     
@@ -92,10 +92,6 @@ def validate_safe_path(
             if current == current.parent:
                 # Reached filesystem root
                 break
-    
-    # Validate path doesn't exist if allow_create is False
-    if not allow_create and not abs_path.exists():
-        raise FileNotFoundError(f"Path does not exist: {abs_path}")
     
     return abs_path
 

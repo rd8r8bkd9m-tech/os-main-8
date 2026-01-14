@@ -34,8 +34,15 @@ class TestValidateSafePath:
     
     def test_absolute_path_outside_base_blocked(self, tmp_path):
         """Test that absolute path outside base is blocked."""
+        # Use a more portable path for testing
+        import sys
+        if sys.platform == 'win32':
+            outside_path = "C:\\Windows\\System32\\config"
+        else:
+            outside_path = "/etc/passwd"
+            
         with pytest.raises(PathTraversalError):
-            validate_safe_path("/etc/passwd", allowed_base=tmp_path)
+            validate_safe_path(outside_path, allowed_base=tmp_path)
     
     def test_relative_path_converted_to_absolute(self, tmp_path):
         """Test that relative paths are converted to absolute."""

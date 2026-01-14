@@ -128,10 +128,20 @@ class TestValidateSecrets:
     
     def test_validate_secrets_fails_in_production_with_default_secrets(self, monkeypatch):
         """Test validation fails in production with default secrets."""
+        from backend.service.config_secrets import get_ai_core_secret
+        
         monkeypatch.setenv("KOLIBRI_ENV", "production")
         monkeypatch.delenv("KOLIBRI_AI_CORE_SECRET", raising=False)
         monkeypatch.delenv("KOLIBRI_GENERATIVE_SECRET", raising=False)
-        monkeypatch.setenv("KOLIBRI_SECRET_KEY", "kolibri-dev-secret-change-in-production")
+        
+        # Get actual default value to avoid hardcoding
+        monkeypatch.delenv("KOLIBRI_SECRET_KEY", raising=False)
+        monkeypatch.setenv("KOLIBRI_ENV", "development")
+        default_secret = get_ai_core_secret()
+        
+        # Now test with that default in production
+        monkeypatch.setenv("KOLIBRI_ENV", "production")
+        monkeypatch.setenv("KOLIBRI_SECRET_KEY", default_secret)
         
         with pytest.raises(SecretNotFoundError) as exc_info:
             validate_secrets()

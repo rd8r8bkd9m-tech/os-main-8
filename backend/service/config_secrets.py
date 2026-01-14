@@ -35,6 +35,7 @@ def get_secret(
         
     Raises:
         SecretNotFoundError: If required=True and secret not found
+        ValueError: If secret contains null bytes
         
     Example:
         >>> api_key = get_secret("KOLIBRI_API_KEY")
@@ -44,6 +45,7 @@ def get_secret(
         - Never logs secret values
         - Uses environment variables only (no files)
         - Validates non-empty values
+        - Checks for null bytes
     """
     value = os.environ.get(key)
     
@@ -54,6 +56,13 @@ def get_secret(
                 f"Please set the {key} environment variable."
             )
         return default or ""
+    
+    # Security: Check for null bytes
+    if '\0' in value:
+        raise ValueError(
+            f"Secret '{key}' contains null bytes, which may indicate "
+            "a security issue or data corruption."
+        )
         
     return value.strip()
 

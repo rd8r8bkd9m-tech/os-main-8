@@ -247,10 +247,16 @@ class TestWhitelistedFunctions:
     def test_all_safe_builtins_callable(self):
         """Test that all declared safe builtins are actually safe."""
         for builtin_name in SAFE_BUILTINS:
+            # Validate builtin name is safe (alphanumeric only)
+            if not builtin_name.replace('_', '').isalnum():
+                pytest.fail(f"Invalid builtin name in SAFE_BUILTINS: {builtin_name}")
+            
             if builtin_name == 'print':
                 # Print is replaced with custom version
                 continue
-            code = f"result = {builtin_name}.__name__"
+            
+            # Use parameterized code instead of f-string interpolation
+            code = "result = {0}.__name__".format(builtin_name)
             try:
                 output, vars = safe_execute(code)
                 assert builtin_name in str(vars.get('result', ''))
