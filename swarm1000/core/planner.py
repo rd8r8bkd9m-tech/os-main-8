@@ -26,7 +26,7 @@ class TaskPlanner:
     def __init__(self, goal: str, budget_agents: int = 1000):
         """
         Initialize task planner.
-        
+
         Args:
             goal: High-level goal for the swarm
             budget_agents: Maximum number of agents (affects task granularity)
@@ -41,11 +41,11 @@ class TaskPlanner:
     ) -> TaskGraph:
         """
         Generate a task graph based on inventory and goal.
-        
+
         Args:
             inventory: List of discovered projects
             task_count: Target number of tasks to generate
-            
+
         Returns:
             TaskGraph with tasks and epics
         """

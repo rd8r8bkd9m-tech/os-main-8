@@ -12,7 +12,7 @@ class GitOps:
     def __init__(self, repo_root: Path, workspace_root: Path):
         """
         Initialize git operations manager.
-        
+
         Args:
             repo_root: Root of the main repository
             workspace_root: Root directory for worker worktrees
@@ -24,11 +24,11 @@ class GitOps:
     def create_worktree(self, worker_id: str, branch_name: str | None = None) -> Path:
         """
         Create a git worktree for a worker.
-        
+
         Args:
             worker_id: Worker identifier (e.g., "worker-01")
             branch_name: Optional branch name (defaults to worker_id)
-            
+
         Returns:
             Path to created worktree
         """
@@ -74,7 +74,7 @@ class GitOps:
     def remove_worktree(self, worker_id: str) -> None:
         """
         Remove a git worktree.
-        
+
         Args:
             worker_id: Worker identifier
         """
@@ -105,12 +105,12 @@ class GitOps:
     ) -> str | None:
         """
         Commit changes in a worktree.
-        
+
         Args:
             worktree_path: Path to worktree
             message: Commit message
             author: Optional author string (e.g., "Name <email>")
-            
+
         Returns:
             Commit SHA if successful, None otherwise
         """

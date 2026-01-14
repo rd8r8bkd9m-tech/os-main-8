@@ -13,7 +13,7 @@ class CodexMCP:
     def __init__(self, mock_mode: bool = True):
         """
         Initialize Codex MCP integration.
-        
+
         Args:
             mock_mode: If True, use mock mode instead of real Codex
         """
@@ -23,10 +23,10 @@ class CodexMCP:
     def start_server(self, port: int = 8765) -> bool:
         """
         Start MCP server.
-        
+
         Args:
             port: Port to run server on
-            
+
         Returns:
             True if server started successfully
         """
@@ -67,14 +67,14 @@ class CodexMCP:
     ) -> dict[str, Any]:
         """
         Apply a code change using Codex MCP.
-        
+
         Args:
             workdir: Working directory to apply changes
             instruction: Natural language instruction for the change
             files_hint: Optional list of files to focus on
             approval_policy: Approval policy (never, always, auto)
             sandbox: Sandbox mode (workspace-write, workspace-read, none)
-            
+
         Returns:
             Result dictionary with status and details
         """
@@ -103,7 +103,7 @@ class CodexMCP:
     ) -> dict[str, Any]:
         """
         Mock implementation of apply_change.
-        
+
         In real implementation, this would call Codex MCP server.
         For demo purposes, we create a placeholder file.
         """
@@ -137,10 +137,10 @@ class CodexMCP:
     def validate_change(self, workdir: Path) -> dict[str, Any]:
         """
         Validate changes made in workdir.
-        
+
         Args:
             workdir: Directory with changes
-            
+
         Returns:
             Validation result
         """

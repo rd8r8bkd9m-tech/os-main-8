@@ -17,7 +17,7 @@ MIGRATIONS = [
         version INTEGER PRIMARY KEY,
         applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-    
+
     CREATE TABLE IF NOT EXISTS tasks (
         id TEXT PRIMARY KEY,
         area TEXT NOT NULL,
@@ -35,7 +35,7 @@ MIGRATIONS = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-    
+
     CREATE TABLE IF NOT EXISTS runs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         goal TEXT,
@@ -47,7 +47,7 @@ MIGRATIONS = [
         completed_tasks INTEGER DEFAULT 0,
         failed_tasks INTEGER DEFAULT 0
     );
-    
+
     CREATE TABLE IF NOT EXISTS commits (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         task_id TEXT NOT NULL,
@@ -60,7 +60,7 @@ MIGRATIONS = [
         FOREIGN KEY (task_id) REFERENCES tasks(id),
         FOREIGN KEY (run_id) REFERENCES runs(id)
     );
-    
+
     CREATE TABLE IF NOT EXISTS reviews (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         task_id TEXT NOT NULL,
@@ -72,7 +72,7 @@ MIGRATIONS = [
         FOREIGN KEY (task_id) REFERENCES tasks(id),
         FOREIGN KEY (commit_id) REFERENCES commits(id)
     );
-    
+
     CREATE TABLE IF NOT EXISTS failures (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         task_id TEXT NOT NULL,
@@ -85,7 +85,7 @@ MIGRATIONS = [
         FOREIGN KEY (task_id) REFERENCES tasks(id),
         FOREIGN KEY (run_id) REFERENCES runs(id)
     );
-    
+
     CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
     CREATE INDEX IF NOT EXISTS idx_tasks_area ON tasks(area);
     CREATE INDEX IF NOT EXISTS idx_commits_task ON commits(task_id);
@@ -121,7 +121,7 @@ class StateManager:
     def __init__(self, db_path: Path):
         """
         Initialize state manager.
-        
+
         Args:
             db_path: Path to SQLite database file
         """

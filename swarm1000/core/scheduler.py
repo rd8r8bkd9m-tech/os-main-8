@@ -20,7 +20,7 @@ class TaskScheduler:
     def __init__(self, task_graph: TaskGraph):
         """
         Initialize scheduler with task graph.
-        
+
         Args:
             task_graph: Graph of tasks with dependencies
         """
@@ -69,10 +69,10 @@ class TaskScheduler:
     def get_next_batch(self, batch_size: int) -> list[Task]:
         """
         Get next batch of tasks to execute.
-        
+
         Args:
             batch_size: Maximum number of tasks to return
-            
+
         Returns:
             List of tasks ready to execute
         """

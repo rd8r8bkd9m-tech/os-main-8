@@ -112,7 +112,7 @@ def test_scheduler_dependency_levels():
     scheduler = TaskScheduler(task_graph)
 
     # Check that levels are computed
-    for task_id, scheduled in scheduler.scheduled_tasks.items():
+    for _task_id, scheduled in scheduler.scheduled_tasks.items():
         assert isinstance(scheduled.level, int)
         assert scheduled.level >= 0
 

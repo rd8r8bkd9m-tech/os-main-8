@@ -111,10 +111,10 @@ COMMON_CONSTRAINTS = [
 def generate_personas(count: int = 1000) -> list[Persona]:
     """
     Generate personas according to role distribution.
-    
+
     Args:
         count: Total number of personas to generate (default 1000)
-        
+
     Returns:
         List of Persona objects
     """
@@ -207,7 +207,7 @@ def generate_personas(count: int = 1000) -> list[Persona]:
 def save_personas_jsonl(personas: list[Persona], output_path: Path) -> None:
     """
     Save personas to JSONL file.
-    
+
     Args:
         personas: List of personas to save
         output_path: Path to output JSONL file
@@ -224,10 +224,10 @@ def save_personas_jsonl(personas: list[Persona], output_path: Path) -> None:
 def load_personas_jsonl(input_path: Path) -> list[Persona]:
     """
     Load personas from JSONL file.
-    
+
     Args:
         input_path: Path to JSONL file
-        
+
     Returns:
         List of Persona objects
     """

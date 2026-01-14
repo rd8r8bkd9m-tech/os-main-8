@@ -12,12 +12,12 @@ def setup_logger(
 ) -> logging.Logger:
     """
     Set up a logger with console and optional file output.
-    
+
     Args:
         name: Logger name
         level: Logging level
         log_file: Optional file path for log output
-        
+
     Returns:
         Configured logger instance
     """

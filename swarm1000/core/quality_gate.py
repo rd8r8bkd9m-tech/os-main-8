@@ -21,7 +21,7 @@ class QualityGate:
     def __init__(self, mode: QualityGateMode = QualityGateMode.STRICT):
         """
         Initialize quality gate.
-        
+
         Args:
             mode: Quality gate mode
         """
@@ -30,11 +30,11 @@ class QualityGate:
     def check(self, workdir: Path, area: str) -> dict[str, Any]:
         """
         Run quality checks on a directory.
-        
+
         Args:
             workdir: Working directory to check
             area: Area/language of the code (backend, frontend, rust, etc.)
-            
+
         Returns:
             Dictionary with check results
         """

@@ -76,10 +76,10 @@ class TaskGraph:
     def get_ready_tasks(self, completed_task_ids: set) -> list[Task]:
         """
         Get tasks that are ready to execute (all dependencies completed).
-        
+
         Args:
             completed_task_ids: Set of task IDs that are completed
-            
+
         Returns:
             List of tasks ready to execute
         """
@@ -98,7 +98,7 @@ class TaskGraph:
     def validate_dependencies(self) -> list[str]:
         """
         Validate that all task dependencies exist and there are no cycles.
-        
+
         Returns:
             List of error messages (empty if valid)
         """

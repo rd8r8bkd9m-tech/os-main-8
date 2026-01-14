@@ -72,7 +72,7 @@ class InventoryScanner:
                  allowed_extensions: tuple = None):
         """
         Initialize inventory scanner.
-        
+
         Args:
             max_depth: Maximum directory depth to scan
             max_file_size_mb: Maximum file size to read (in MB)
@@ -89,10 +89,10 @@ class InventoryScanner:
     def scan_roots(self, root_paths: list[str]) -> list[ProjectInventoryItem]:
         """
         Scan multiple root directories.
-        
+
         Args:
             root_paths: List of root directory paths to scan
-            
+
         Returns:
             List of discovered project inventory items
         """
@@ -227,7 +227,7 @@ class InventoryScanner:
             # Ignore errors during language detection (permissions, invalid files, etc.)
             pass
 
-        return sorted(list(languages))
+        return sorted(languages)
 
     def _calculate_size(self, path: Path) -> tuple:
         """Calculate total size and file count."""
