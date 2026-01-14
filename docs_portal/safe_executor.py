@@ -141,8 +141,29 @@ def validate_ast(tree: ast.AST) -> None:
                     )
             elif isinstance(node.func, ast.Attribute):
                 # Allow method calls like list.append(), str.upper(), etc.
-                # These are safe as they operate on existing objects
-                pass
+                # But block dangerous dunder methods
+                method_name = node.func.attr
+                
+                # Blacklist of dangerous methods
+                dangerous_methods = {
+                    '__import__', '__builtins__', '__globals__', '__locals__',
+                    '__code__', '__dict__', '__class__', '__bases__', '__subclasses__',
+                    '__init__', '__new__', '__del__', '__getattribute__', '__setattr__',
+                    '__delattr__', 'eval', 'exec', 'compile', 'open', 'input',
+                }
+                
+                if method_name in dangerous_methods:
+                    raise SafeExecutionError(
+                        f"Dangerous method call: .{method_name}() is not allowed."
+                    )
+                
+                # Block all dunder methods except a few safe ones
+                if method_name.startswith('__') and method_name.endswith('__'):
+                    safe_dunders = {'__len__', '__str__', '__repr__', '__iter__', '__next__'}
+                    if method_name not in safe_dunders:
+                        raise SafeExecutionError(
+                            f"Dunder method: .{method_name}() is not allowed."
+                        )
             else:
                 # Disallow other complex call patterns
                 raise SafeExecutionError(

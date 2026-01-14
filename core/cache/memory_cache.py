@@ -39,7 +39,24 @@ class CacheEntry(Generic[T]):
 
 
 class LRUCache(Generic[T]):
-    """Thread-safe LRU cache with TTL support."""
+    """LRU cache with TTL support.
+    
+    Features:
+    - Automatic eviction of least recently used items
+    - Time-to-live (TTL) expiration
+    - Hit/miss statistics
+    - Configurable size limits
+    
+    Note:
+        This implementation is NOT thread-safe. Use external synchronization
+        (e.g., threading.Lock) if accessing from multiple threads.
+    
+    Example:
+        >>> cache = LRUCache[str](max_size=100, ttl=3600)
+        >>> cache.set("key", "value")
+        >>> value = cache.get("key")
+        >>> print(cache.stats())
+    """
     
     def __init__(self, max_size: int = 1000, ttl: float = 3600.0) -> None:
         self._cache: OrderedDict[str, CacheEntry[T]] = OrderedDict()

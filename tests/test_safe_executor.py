@@ -255,14 +255,16 @@ class TestWhitelistedFunctions:
                 # Print is replaced with custom version
                 continue
             
-            # Use parameterized code instead of f-string interpolation
-            code = "result = {0}.__name__".format(builtin_name)
+            # Test the builtin works
+            code = f"{builtin_name}()"
             try:
-                output, vars = safe_execute(code)
-                assert builtin_name in str(vars.get('result', ''))
-            except SafeExecutionError:
-                # Some builtins might not have __name__
-                pass
+                # Most builtins can be called with no args or will error gracefully
+                safe_execute(code)
+            except SafeExecutionError as e:
+                # Some builtins require arguments - that's OK
+                if "require" not in str(e).lower():
+                    # But other errors are problems
+                    pytest.fail(f"Builtin {builtin_name} failed unexpectedly: {e}")
 
 
 class TestEdgeCases:
