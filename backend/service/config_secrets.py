@@ -111,14 +111,15 @@ def get_generative_ai_secret() -> str:
 
 def get_llm_api_key() -> Optional[str]:
     """Get LLM API key if configured.
-    
+
     Returns:
         LLM API key or None if not configured
-        
+
     Environment:
         KOLIBRI_LLM_API_KEY: Optional LLM provider API key
     """
-    return get_secret("KOLIBRI_LLM_API_KEY", default=None, required=False)
+    value = get_secret("KOLIBRI_LLM_API_KEY", default="", required=False)
+    return value if value else None
 
 
 def is_production() -> bool:
