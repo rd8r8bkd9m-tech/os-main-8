@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import io
 import re
 from typing import Dict, List, Mapping
+
+from docs_portal.safe_executor import safe_execute, SafeExecutionError
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,24 +80,33 @@ class ExampleExecutor:
     """Execute runnable examples in a controlled environment."""
 
     def execute(self, example: Example) -> ExampleExecution:
+        """Execute an example safely using AST-based validation.
+        
+        Args:
+            example: Example to execute
+            
+        Returns:
+            ExampleExecution with stdout and variables
+            
+        Raises:
+            ValueError: If example language is not Python
+            SafeExecutionError: If code contains unsafe operations
+        """
         if example.language.lower() != "python":
             raise ValueError("Only Python examples are executable in the portal")
-        stdout = io.StringIO()
-        builtins = {
-            "print": lambda *args, **kwargs: print(*args, file=stdout, **kwargs),
-            "range": range,
-            "len": len,
-            "sum": sum,
-            "min": min,
-            "max": max,
-            "sorted": sorted,
-        }
-        globals_ns = {"__builtins__": builtins}
-        locals_ns: Dict[str, object] = {}
-        exec(example.code, globals_ns, locals_ns)
-        variables = {
-            name: repr(value)
-            for name, value in locals_ns.items()
-            if not name.startswith("_")
-        }
-        return ExampleExecution(stdout=stdout.getvalue().strip(), variables=variables)
+        
+        # Use safe execution instead of direct exec()
+        try:
+            stdout, variables = safe_execute(
+                example.code,
+                timeout=5,
+                max_output_size=10000
+            )
+        except SafeExecutionError as e:
+            # Return error in output instead of crashing
+            return ExampleExecution(
+                stdout=f"❌ Execution Error: {str(e)}",
+                variables={}
+            )
+        
+        return ExampleExecution(stdout=stdout, variables=variables)
