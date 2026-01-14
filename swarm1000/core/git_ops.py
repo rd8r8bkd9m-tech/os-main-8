@@ -2,14 +2,13 @@
 
 import subprocess
 from pathlib import Path
-from typing import List, Optional
 
 from .logger import logger
 
 
 class GitOps:
     """Manages git operations for swarm workers."""
-    
+
     def __init__(self, repo_root: Path, workspace_root: Path):
         """
         Initialize git operations manager.
@@ -21,8 +20,8 @@ class GitOps:
         self.repo_root = Path(repo_root)
         self.workspace_root = Path(workspace_root)
         self.workspace_root.mkdir(parents=True, exist_ok=True)
-    
-    def create_worktree(self, worker_id: str, branch_name: Optional[str] = None) -> Path:
+
+    def create_worktree(self, worker_id: str, branch_name: str | None = None) -> Path:
         """
         Create a git worktree for a worker.
         
@@ -35,16 +34,16 @@ class GitOps:
         """
         if branch_name is None:
             branch_name = f"swarm/{worker_id}"
-        
+
         worktree_path = self.workspace_root / "workers" / worker_id
-        
+
         # Check if worktree already exists
         if worktree_path.exists():
             logger.info(f"Worktree already exists: {worktree_path}")
             return worktree_path
-        
+
         worktree_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         try:
             # Create worktree
             subprocess.run(
@@ -56,7 +55,7 @@ class GitOps:
             )
             logger.info(f"Created worktree: {worktree_path} (branch: {branch_name})")
             return worktree_path
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             # Branch might already exist, try without -b
             try:
                 subprocess.run(
@@ -71,7 +70,7 @@ class GitOps:
             except subprocess.CalledProcessError as e2:
                 logger.error(f"Failed to create worktree: {e2.stderr}")
                 raise
-    
+
     def remove_worktree(self, worker_id: str) -> None:
         """
         Remove a git worktree.
@@ -80,11 +79,11 @@ class GitOps:
             worker_id: Worker identifier
         """
         worktree_path = self.workspace_root / "workers" / worker_id
-        
+
         if not worktree_path.exists():
             logger.warning(f"Worktree does not exist: {worktree_path}")
             return
-        
+
         try:
             subprocess.run(
                 ["git", "worktree", "remove", str(worktree_path), "--force"],
@@ -97,13 +96,13 @@ class GitOps:
         except subprocess.CalledProcessError as e:
             logger.error(f"Failed to remove worktree: {e.stderr}")
             raise
-    
+
     def commit_changes(
         self,
         worktree_path: Path,
         message: str,
-        author: Optional[str] = None
-    ) -> Optional[str]:
+        author: str | None = None
+    ) -> str | None:
         """
         Commit changes in a worktree.
         
@@ -123,12 +122,12 @@ class GitOps:
                 check=True,
                 capture_output=True
             )
-            
+
             # Commit
             cmd = ["git", "commit", "-m", message]
             if author:
                 cmd.extend(["--author", author])
-            
+
             subprocess.run(
                 cmd,
                 cwd=worktree_path,
@@ -136,7 +135,7 @@ class GitOps:
                 capture_output=True,
                 text=True
             )
-            
+
             # Get commit SHA
             sha_result = subprocess.run(
                 ["git", "rev-parse", "HEAD"],
@@ -146,14 +145,14 @@ class GitOps:
                 text=True
             )
             commit_sha = sha_result.stdout.strip()
-            
+
             logger.info(f"Committed changes: {commit_sha[:8]} - {message}")
             return commit_sha
         except subprocess.CalledProcessError as e:
             logger.error(f"Failed to commit changes: {e.stderr}")
             return None
-    
-    def get_current_branch(self, worktree_path: Path) -> Optional[str]:
+
+    def get_current_branch(self, worktree_path: Path) -> str | None:
         """Get current branch name in worktree."""
         try:
             result = subprocess.run(
@@ -166,7 +165,7 @@ class GitOps:
             return result.stdout.strip()
         except subprocess.CalledProcessError:
             return None
-    
+
     def has_changes(self, worktree_path: Path) -> bool:
         """Check if worktree has uncommitted changes."""
         try:
@@ -180,8 +179,8 @@ class GitOps:
             return bool(result.stdout.strip())
         except subprocess.CalledProcessError:
             return False
-    
-    def list_worktrees(self) -> List[dict]:
+
+    def list_worktrees(self) -> list[dict]:
         """List all worktrees."""
         try:
             result = subprocess.run(
@@ -191,7 +190,7 @@ class GitOps:
                 capture_output=True,
                 text=True
             )
-            
+
             worktrees = []
             current = {}
             for line in result.stdout.split('\n'):
@@ -203,10 +202,10 @@ class GitOps:
                     current['branch'] = line.split(' ', 1)[1]
                 elif line.startswith('HEAD '):
                     current['head'] = line.split(' ', 1)[1]
-            
+
             if current:
                 worktrees.append(current)
-            
+
             return worktrees
         except subprocess.CalledProcessError:
             return []

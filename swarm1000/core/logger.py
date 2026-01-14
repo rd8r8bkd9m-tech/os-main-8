@@ -3,13 +3,12 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 
 def setup_logger(
     name: str = "swarm1000",
     level: int = logging.INFO,
-    log_file: Optional[Path] = None
+    log_file: Path | None = None
 ) -> logging.Logger:
     """
     Set up a logger with console and optional file output.
@@ -24,10 +23,10 @@ def setup_logger(
     """
     logger = logging.getLogger(name)
     logger.setLevel(level)
-    
+
     # Remove existing handlers
     logger.handlers.clear()
-    
+
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level)
@@ -37,7 +36,7 @@ def setup_logger(
     )
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
-    
+
     # File handler
     if log_file:
         log_file.parent.mkdir(parents=True, exist_ok=True)
@@ -49,7 +48,7 @@ def setup_logger(
         )
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
-    
+
     return logger
 
 

@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
+from backend.service.config_secrets import get_ai_core_secret, get_generative_ai_secret
 from ..ai_core import KolibriAICore
 from ..generative_ai import GenerativeDecimalAI
 from ..audit import log_audit_event, log_genome_event
@@ -39,9 +40,6 @@ _scheduler = EnergyAwareScheduler(
     local_runner_available=False,
     upstream_available=False,
 )
-
-# Import secret management
-from backend.service.config_secrets import get_ai_core_secret, get_generative_ai_secret
 
 _ai_core = KolibriAICore(
     secret_key=get_ai_core_secret(),

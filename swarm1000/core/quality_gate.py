@@ -1,9 +1,9 @@
 """Quality gate checks for code changes."""
 
 import subprocess
-from pathlib import Path
-from typing import Dict, Any, List
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 from .logger import logger
 
@@ -17,7 +17,7 @@ class QualityGateMode(Enum):
 
 class QualityGate:
     """Performs quality checks on code changes."""
-    
+
     def __init__(self, mode: QualityGateMode = QualityGateMode.STRICT):
         """
         Initialize quality gate.
@@ -26,8 +26,8 @@ class QualityGate:
             mode: Quality gate mode
         """
         self.mode = mode
-    
-    def check(self, workdir: Path, area: str) -> Dict[str, Any]:
+
+    def check(self, workdir: Path, area: str) -> dict[str, Any]:
         """
         Run quality checks on a directory.
         
@@ -45,17 +45,17 @@ class QualityGate:
                 "mode": "skip",
                 "checks": [],
             }
-        
+
         logger.info(f"Running quality gate checks in {workdir} (mode: {self.mode.value})")
-        
+
         checks = []
-        
+
         # Detect what checks to run based on files present
         checks.extend(self._check_python(workdir))
         checks.extend(self._check_javascript_typescript(workdir))
         checks.extend(self._check_rust(workdir))
         checks.extend(self._check_c_cpp(workdir))
-        
+
         # Determine overall pass/fail
         if self.mode == QualityGateMode.STRICT:
             passed = all(check["passed"] for check in checks)
@@ -65,22 +65,22 @@ class QualityGate:
                 check["passed"] or check.get("severity") == "warning"
                 for check in checks
             )
-        
+
         return {
             "passed": passed,
             "mode": self.mode.value,
             "checks": checks,
         }
-    
-    def _check_python(self, workdir: Path) -> List[Dict[str, Any]]:
+
+    def _check_python(self, workdir: Path) -> list[dict[str, Any]]:
         """Run Python quality checks."""
         checks = []
-        
+
         # Check if there are Python files
         py_files = list(workdir.rglob("*.py"))
         if not py_files:
             return checks
-        
+
         # Try ruff (if available)
         try:
             result = subprocess.run(
@@ -98,7 +98,7 @@ class QualityGate:
             })
         except (subprocess.TimeoutExpired, FileNotFoundError):
             logger.debug("ruff not available or timed out")
-        
+
         # Try pytest (if tests exist)
         if (workdir / "tests").exists() or any(
             f.name.startswith("test_") for f in py_files
@@ -119,17 +119,17 @@ class QualityGate:
                 })
             except (subprocess.TimeoutExpired, FileNotFoundError):
                 logger.debug("pytest not available or timed out")
-        
+
         return checks
-    
-    def _check_javascript_typescript(self, workdir: Path) -> List[Dict[str, Any]]:
+
+    def _check_javascript_typescript(self, workdir: Path) -> list[dict[str, Any]]:
         """Run JavaScript/TypeScript quality checks."""
         checks = []
-        
+
         # Check if package.json exists
         if not (workdir / "package.json").exists():
             return checks
-        
+
         # Try eslint
         try:
             result = subprocess.run(
@@ -147,7 +147,7 @@ class QualityGate:
             })
         except (subprocess.TimeoutExpired, FileNotFoundError):
             logger.debug("eslint not available or timed out")
-        
+
         # Try tsc (TypeScript compiler)
         if (workdir / "tsconfig.json").exists():
             try:
@@ -166,16 +166,16 @@ class QualityGate:
                 })
             except (subprocess.TimeoutExpired, FileNotFoundError):
                 logger.debug("tsc not available or timed out")
-        
+
         return checks
-    
-    def _check_rust(self, workdir: Path) -> List[Dict[str, Any]]:
+
+    def _check_rust(self, workdir: Path) -> list[dict[str, Any]]:
         """Run Rust quality checks."""
         checks = []
-        
+
         if not (workdir / "Cargo.toml").exists():
             return checks
-        
+
         # Try cargo check
         try:
             result = subprocess.run(
@@ -193,7 +193,7 @@ class QualityGate:
             })
         except (subprocess.TimeoutExpired, FileNotFoundError):
             logger.debug("cargo not available or timed out")
-        
+
         # Try cargo clippy
         try:
             result = subprocess.run(
@@ -211,20 +211,20 @@ class QualityGate:
             })
         except (subprocess.TimeoutExpired, FileNotFoundError):
             logger.debug("cargo clippy not available or timed out")
-        
+
         return checks
-    
-    def _check_c_cpp(self, workdir: Path) -> List[Dict[str, Any]]:
+
+    def _check_c_cpp(self, workdir: Path) -> list[dict[str, Any]]:
         """Run C/C++ quality checks."""
         checks = []
-        
+
         # Check for CMakeLists.txt or Makefile
         has_cmake = (workdir / "CMakeLists.txt").exists()
         has_make = (workdir / "Makefile").exists()
-        
+
         if not (has_cmake or has_make):
             return checks
-        
+
         # Try make/cmake build
         try:
             if has_cmake:
@@ -259,5 +259,5 @@ class QualityGate:
                 })
         except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError):
             logger.debug("C/C++ build tools not available or timed out")
-        
+
         return checks

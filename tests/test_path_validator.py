@@ -3,7 +3,6 @@
 import os
 import pytest
 from pathlib import Path
-import tempfile
 from core.security.path_validator import (
     validate_safe_path,
     validate_filename,

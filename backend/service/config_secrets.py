@@ -83,7 +83,8 @@ def get_ai_core_secret() -> str:
         # Fallback to generic secret for backward compatibility
         return get_secret(
             "KOLIBRI_SECRET_KEY",
-            default="kolibri-dev-secret-change-in-production"
+            default="kolibri-dev-secret-change-in-production",
+            required=False
         )
 
 
@@ -103,7 +104,8 @@ def get_generative_ai_secret() -> str:
         # Fallback to generic secret for backward compatibility
         return get_secret(
             "KOLIBRI_SECRET_KEY",
-            default="kolibri-generative-dev-secret-change-in-production"
+            default="kolibri-generative-dev-secret-change-in-production",
+            required=False
         )
 
 

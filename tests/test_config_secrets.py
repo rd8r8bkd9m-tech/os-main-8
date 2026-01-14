@@ -1,6 +1,5 @@
 """Tests for secure secret management."""
 
-import os
 import pytest
 from backend.service.config_secrets import (
     get_secret,

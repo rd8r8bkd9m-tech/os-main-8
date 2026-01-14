@@ -2,14 +2,14 @@
 
 import subprocess
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Any
 
 from .logger import logger
 
 
 class CodexMCP:
     """Integrates with Codex MCP server for AI-assisted code changes."""
-    
+
     def __init__(self, mock_mode: bool = True):
         """
         Initialize Codex MCP integration.
@@ -19,7 +19,7 @@ class CodexMCP:
         """
         self.mock_mode = mock_mode
         self.server_process = None
-    
+
     def start_server(self, port: int = 8765) -> bool:
         """
         Start MCP server.
@@ -33,7 +33,7 @@ class CodexMCP:
         if self.mock_mode:
             logger.info("Codex MCP running in MOCK mode")
             return True
-        
+
         try:
             # Try to start Codex MCP server
             # Example: npx -y codex mcp-server --port 8765
@@ -49,22 +49,22 @@ class CodexMCP:
             logger.info("Falling back to mock mode")
             self.mock_mode = True
             return True
-    
+
     def stop_server(self) -> None:
         """Stop MCP server."""
         if self.server_process:
             self.server_process.terminate()
             self.server_process.wait(timeout=5)
             logger.info("Stopped Codex MCP server")
-    
+
     def apply_change(
         self,
         workdir: Path,
         instruction: str,
-        files_hint: Optional[List[str]] = None,
+        files_hint: list[str] | None = None,
         approval_policy: str = "never",
         sandbox: str = "workspace-write"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Apply a code change using Codex MCP.
         
@@ -80,13 +80,13 @@ class CodexMCP:
         """
         if self.mock_mode:
             return self._mock_apply_change(workdir, instruction, files_hint)
-        
+
         try:
             # Call MCP API (this would be actual HTTP/RPC call)
             # For now, mock it
             logger.warning("Real Codex MCP not implemented, using mock")
             return self._mock_apply_change(workdir, instruction, files_hint)
-        
+
         except Exception as e:
             logger.error(f"Failed to apply change via Codex MCP: {e}")
             return {
@@ -94,13 +94,13 @@ class CodexMCP:
                 "error": str(e),
                 "files_changed": [],
             }
-    
+
     def _mock_apply_change(
         self,
         workdir: Path,
         instruction: str,
-        files_hint: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        files_hint: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Mock implementation of apply_change.
         
@@ -109,18 +109,18 @@ class CodexMCP:
         """
         logger.info(f"[MOCK] Applying change in {workdir}")
         logger.info(f"[MOCK] Instruction: {instruction}")
-        
+
         # Create a mock change log file
         mock_file = workdir / ".swarm_changes.log"
-        
+
         try:
             with open(mock_file, 'a') as f:
-                f.write(f"\n--- Change Request ---\n")
+                f.write("\n--- Change Request ---\n")
                 f.write(f"Instruction: {instruction}\n")
                 f.write(f"Files hint: {files_hint}\n")
-                f.write(f"Status: MOCKED (no actual changes made)\n")
-                f.write(f"---\n")
-            
+                f.write("Status: MOCKED (no actual changes made)\n")
+                f.write("---\n")
+
             return {
                 "success": True,
                 "mock": True,
@@ -133,8 +133,8 @@ class CodexMCP:
                 "error": str(e),
                 "files_changed": [],
             }
-    
-    def validate_change(self, workdir: Path) -> Dict[str, Any]:
+
+    def validate_change(self, workdir: Path) -> dict[str, Any]:
         """
         Validate changes made in workdir.
         
@@ -153,9 +153,9 @@ class CodexMCP:
                 text=True,
                 check=True
             )
-            
+
             has_changes = bool(result.stdout.strip())
-            
+
             return {
                 "valid": True,
                 "has_changes": has_changes,
