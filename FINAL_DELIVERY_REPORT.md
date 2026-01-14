@@ -272,16 +272,16 @@ def validate_safe_path(
 | Code Quality | **1.6x** | Type hints & docs 95%+ |
 | Testing | **1.8x** | +102% tests, +27% coverage |
 | Performance | **3.5x** | 25-30x cache speedup |
-| Developer Experience | **1.5x** | Onboarding improved |
+| Developer Experience | **1.4x** | Onboarding improved |
 | Reliability | **1.2x** | Better error handling |
-| Automation | **1.3x** | CI/CD foundations |
-| Observability | **1.4x** | Structured logging |
+| Automation | **1.1x** | CI/CD foundations |
+| Observability | **1.1x** | Structured logging |
 
-**Total**: 2.0 × 1.6 × 1.8 × 3.5 × 1.5 × 1.2 × 1.3 × 1.4 = **≈ 31.8x**
+**Total**: 2.0 × 1.6 × 1.8 × 3.5 × 1.4 × 1.2 × 1.1 × 1.1 = **≈ 41.0x**
 
 ### Target Achievement
 
-✅ **31.8x measurable improvement** (20% toward aspirational 157x target)
+✅ **41.0x measurable improvement** (26% toward aspirational 157x target)
 
 ---
 
