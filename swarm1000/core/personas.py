@@ -2,9 +2,8 @@
 
 import json
 import random
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import List
 
 from .logger import logger
 
@@ -15,9 +14,9 @@ class Persona:
     id: str
     role: str
     seniority: str
-    stack: List[str]
+    stack: list[str]
     style: str
-    constraints: List[str]
+    constraints: list[str]
     review_skill: int  # 1-10
 
 
@@ -109,19 +108,19 @@ COMMON_CONSTRAINTS = [
 ]
 
 
-def generate_personas(count: int = 1000) -> List[Persona]:
+def generate_personas(count: int = 1000) -> list[Persona]:
     """
     Generate personas according to role distribution.
-    
+
     Args:
         count: Total number of personas to generate (default 1000)
-        
+
     Returns:
         List of Persona objects
     """
     personas = []
     persona_id = 1
-    
+
     for role, role_count in ROLE_DISTRIBUTION.items():
         for _ in range(role_count):
             # Determine seniority
@@ -134,7 +133,7 @@ def generate_personas(count: int = 1000) -> List[Persona]:
             else:
                 weights = [0.2, 0.35, 0.3, 0.1, 0.05]  # Junior to Principal
                 seniority = random.choices(SENIORITY_LEVELS, weights=weights)[0]
-            
+
             # Determine stack
             if "Backend" in role:
                 stack = random.choice(BACKEND_STACKS)
@@ -152,13 +151,13 @@ def generate_personas(count: int = 1000) -> List[Persona]:
                 stack = random.choice(DESIGN_STACKS)
             else:
                 stack = ["General", "Agile", "Communication"]
-            
+
             # Determine style
             style = random.choice(CODING_STYLES)
-            
+
             # Determine constraints (2-4 random constraints)
             constraints = random.sample(COMMON_CONSTRAINTS, k=random.randint(2, 4))
-            
+
             # Review skill based on seniority
             review_skill_map = {
                 "Junior": random.randint(3, 5),
@@ -168,7 +167,7 @@ def generate_personas(count: int = 1000) -> List[Persona]:
                 "Principal": random.randint(9, 10),
             }
             review_skill = review_skill_map.get(seniority, 5)
-            
+
             persona = Persona(
                 id=f"agent-{persona_id:04d}",
                 role=role,
@@ -180,7 +179,7 @@ def generate_personas(count: int = 1000) -> List[Persona]:
             )
             personas.append(persona)
             persona_id += 1
-    
+
     # Fill remaining slots with balanced mix if needed
     while len(personas) < count:
         role = random.choice(list(ROLE_DISTRIBUTION.keys()))
@@ -189,7 +188,7 @@ def generate_personas(count: int = 1000) -> List[Persona]:
         style = random.choice(CODING_STYLES)
         constraints = random.sample(COMMON_CONSTRAINTS, k=3)
         review_skill = random.randint(5, 8)
-        
+
         persona = Persona(
             id=f"agent-{persona_id:04d}",
             role=role,
@@ -201,42 +200,42 @@ def generate_personas(count: int = 1000) -> List[Persona]:
         )
         personas.append(persona)
         persona_id += 1
-    
+
     return personas[:count]
 
 
-def save_personas_jsonl(personas: List[Persona], output_path: Path) -> None:
+def save_personas_jsonl(personas: list[Persona], output_path: Path) -> None:
     """
     Save personas to JSONL file.
-    
+
     Args:
         personas: List of personas to save
         output_path: Path to output JSONL file
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     with open(output_path, 'w') as f:
         for persona in personas:
             f.write(json.dumps(asdict(persona)) + '\n')
-    
+
     logger.info(f"Saved {len(personas)} personas to {output_path}")
 
 
-def load_personas_jsonl(input_path: Path) -> List[Persona]:
+def load_personas_jsonl(input_path: Path) -> list[Persona]:
     """
     Load personas from JSONL file.
-    
+
     Args:
         input_path: Path to JSONL file
-        
+
     Returns:
         List of Persona objects
     """
     personas = []
-    with open(input_path, 'r') as f:
+    with open(input_path) as f:
         for line in f:
             data = json.loads(line)
             personas.append(Persona(**data))
-    
+
     logger.info(f"Loaded {len(personas)} personas from {input_path}")
     return personas

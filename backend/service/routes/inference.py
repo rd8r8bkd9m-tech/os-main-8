@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
+from backend.service.config_secrets import get_ai_core_secret, get_generative_ai_secret
 from ..ai_core import KolibriAICore
 from ..generative_ai import GenerativeDecimalAI
 from ..audit import log_audit_event, log_genome_event
@@ -41,14 +42,14 @@ _scheduler = EnergyAwareScheduler(
 )
 
 _ai_core = KolibriAICore(
-    secret_key="kolibri-prod-secret",
+    secret_key=get_ai_core_secret(),
     enable_llm=False,  # Will be enabled if LLM endpoint configured
     llm_endpoint=None,
 )
 
 # NEW: Generative Decimal AI (самообучающаяся система)
 _generative_ai = GenerativeDecimalAI(
-    secret_key="kolibri-generative-prod",
+    secret_key=get_generative_ai_secret(),
     pool_size=24  # 24 эволюционирующие формулы
 )
 
