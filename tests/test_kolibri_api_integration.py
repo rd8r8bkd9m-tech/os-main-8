@@ -44,8 +44,9 @@ class TestKolibriAIIntegration:
         assert len(decision.response) > 0
         assert decision.signature is not None
         
-        # Verify signature
-        assert decision.verify_signature("kolibri-prod-secret")
+        # Verify signature (uses default secret from config_secrets)
+        from backend.service.config_secrets import get_ai_core_secret
+        assert decision.verify_signature(get_ai_core_secret())
 
     @pytest.mark.asyncio
     async def test_batch_api_integration(self):
@@ -56,9 +57,10 @@ class TestKolibriAIIntegration:
         decisions = await _ai_core.batch_reason(queries)
         
         assert len(decisions) == 3
+        from backend.service.config_secrets import get_ai_core_secret
         for decision in decisions:
             assert decision.signature is not None
-            assert decision.verify_signature("kolibri-prod-secret")
+            assert decision.verify_signature(get_ai_core_secret())
 
 
 if __name__ == "__main__":

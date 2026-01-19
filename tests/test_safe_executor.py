@@ -10,6 +10,7 @@ spec = importlib.util.spec_from_file_location(
     "safe_executor",
     "docs_portal/safe_executor.py"
 )
+assert spec is not None and spec.loader is not None
 safe_executor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(safe_executor)
 

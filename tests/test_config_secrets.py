@@ -9,6 +9,7 @@ spec = importlib.util.spec_from_file_location(
     "config_secrets",
     "backend/service/config_secrets.py"
 )
+assert spec is not None and spec.loader is not None
 config_secrets = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(config_secrets)
 
