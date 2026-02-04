@@ -38,9 +38,17 @@ def _is_production() -> bool:
     return env in ("production", "prod")
 
 
+def _parse_env_bool(name: str, default: bool = False) -> bool:
+    """Parse boolean value from environment variable."""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.lower() in ("1", "true", "yes", "on")
+
+
 def create_app() -> FastAPI:
-    # Settings needed for middleware configuration validation during startup
-    _ = get_settings()
+    # Validate settings on startup to fail fast on configuration errors
+    get_settings()
     is_prod = _is_production()
 
     application = FastAPI(
@@ -65,11 +73,7 @@ def create_app() -> FastAPI:
     )
 
     # Rate limiting middleware
-    rate_limit_enabled = os.getenv("KOLIBRI_RATE_LIMIT_ENABLED", "true").lower() in (
-        "1",
-        "true",
-        "yes",
-    )
+    rate_limit_enabled = _parse_env_bool("KOLIBRI_RATE_LIMIT_ENABLED", default=True)
     rps = float(os.getenv("KOLIBRI_RATE_LIMIT_RPS", "30"))
     burst = float(os.getenv("KOLIBRI_RATE_LIMIT_BURST", "60"))
     application.add_middleware(

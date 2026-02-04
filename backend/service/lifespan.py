@@ -6,7 +6,6 @@ import logging
 import signal
 import threading
 from contextlib import asynccontextmanager
-from typing import Set
 
 from fastapi import FastAPI
 
@@ -16,7 +15,6 @@ from .observability import configure_logging
 __all__ = ["lifespan"]
 
 _logger = logging.getLogger("kolibri.service")
-_active_connections: Set[asyncio.Task[None]] = set()
 _shutdown_event = asyncio.Event()
 
 
@@ -53,35 +51,6 @@ def _register_shutdown_handlers() -> None:
             pass
 
 
-async def _graceful_shutdown(timeout: float = 30.0) -> None:
-    """Wait for active connections to complete with timeout."""
-    if not _active_connections:
-        return
-
-    _logger.info(
-        "graceful_shutdown_started",
-        extra={"active_connections": len(_active_connections)},
-    )
-
-    # Wait for active tasks to complete
-    done, pending = await asyncio.wait(
-        _active_connections,
-        timeout=timeout,
-        return_when=asyncio.ALL_COMPLETED,
-    )
-
-    if pending:
-        _logger.warning(
-            "graceful_shutdown_timeout",
-            extra={
-                "completed": len(done),
-                "cancelled": len(pending),
-            },
-        )
-        for task in pending:
-            task.cancel()
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # pragma: no cover - integration behaviour tested
     settings = get_settings()
@@ -103,5 +72,4 @@ async def lifespan(app: FastAPI):  # pragma: no cover - integration behaviour te
         yield
     finally:
         _logger.info("service_shutting_down")
-        await _graceful_shutdown()
         _logger.info("service_stopped")

@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from threading import Lock
 from typing import Dict, Optional, Tuple
 
-from fastapi import HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.types import ASGIApp
@@ -130,9 +129,16 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         allowed, retry_after = self._limiter.is_allowed(client_ip)
 
         if not allowed:
-            raise HTTPException(
+            from starlette.responses import JSONResponse
+
+            return JSONResponse(
                 status_code=429,
-                detail="Rate limit exceeded. Please slow down.",
+                content={
+                    "error": "RATE_LIMITED",
+                    "message": "Rate limit exceeded. Please slow down.",
+                    "detail": "Rate limit exceeded. Please slow down.",
+                },
+                headers={"Retry-After": str(int(retry_after) + 1)},
             )
 
         return await call_next(request)
